@@ -2,13 +2,15 @@
 
 install node.js version 16.17.1
 
-cd server && npm install
+clone project
 
-cd ../client && npm install
+go to 'server' directory, run 'npm install'
+
+go to 'client' directory, run 'npm install'
 
 # Run server with client
 
-cd server && node index.js
+go to 'server' directory, run 'node index.js'
 
-cd ..client && npm start
+open another terminal, go to 'client' directory, run 'npm start'
 
