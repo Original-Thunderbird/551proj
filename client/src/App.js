@@ -15,7 +15,7 @@ function App() {
   })
 
   function handleChange(event) {
-    console.log(event.target.name, event.target.value)
+    // console.log(event.target.name, event.target.value)
     setMyInput(prevInput => {
       return {
         ...prevInput,
@@ -29,14 +29,14 @@ function App() {
     [cmd, params, filename] = parseRawCmd(myInput.cmdStr);
     console.log('after parse:', 'cmd:', cmd, 'params', params, 'filename', filename);
     Axios.post('http://localhost:3001/cmd', {cmd: cmd, params: params, filename: filename}).then((res) => {
-    console.log(res.data)
-    setMyOutput(prevOutput => {
-      return {
-        ...prevOutput,
-        cmdErr: res.data.err
-      }
-    })
-    //cmdErr = res.data.err;
+      console.log(res.data)
+      setMyOutput(prevOutput => {
+        return {
+          ...prevOutput,
+          cmdErr: res.data.err
+        }
+      })
+      //cmdErr = res.data.err;
       if(cmd === 'cd') {
         setMyOutput(prevOutput => {
           return {
@@ -63,8 +63,16 @@ function App() {
 
   function handleQuery(event) {
     event.preventDefault();
-    Axios.post('http://localhost:3001/create', myInput).then(() => {
-      console.log("success");
+    console.log('raw q:', myInput.query);
+    Axios.post('http://localhost:3001/query', {rawQuery: myInput.query}).then((res) => {
+      console.log(res.data);
+      setMyOutput(prevOutput => {
+        return {
+          ...prevOutput,
+          queryOutput: res.data.output,
+          queryErr: res.data.err
+        }
+      })
     })
     setMyInput({
       cmdStr: '', query:''

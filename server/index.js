@@ -4,6 +4,7 @@ const multer = require('multer')
 const fileUpload = require('express-fileupload');
 const path = require("path");
 const route = require('./route')
+const analysis = require('./analysis')
 
 const config = require('./config')
 
@@ -88,6 +89,12 @@ app.post('/cmd',  (req, res) => {
     //     //     res.send("Vals inserted")
     // }
 });
+
+app.post('/query', (req, res) => {
+    var [output, err] = analysis.HandleQuery(req.body.rawQuery)
+    res.send({output: output, err: err});
+});
+
 
 app.listen(3001, () => {
     console.log("hello node")
