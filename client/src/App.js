@@ -11,8 +11,14 @@ function App() {
   })
 
   const [myInput, setMyInput] = React.useState({
-    cmdStr: '', query:''
+    cmdStr: '', query:'', srcDB:'MySQL'
   })
+
+  React.useEffect(() => {
+    Axios.post('http://localhost:3001/db', {db: myInput.srcDB}).then((res) => {
+      console.log(res.data);
+    });
+  });
 
   function handleChange(event) {
     // console.log(event.target.name, event.target.value)
@@ -63,7 +69,7 @@ function App() {
 
   function handleQuery(event) {
     event.preventDefault();
-    console.log('raw q:', myInput.query);
+    // console.log('raw q:', myInput.query);
     Axios.post('http://localhost:3001/query', {rawQuery: myInput.query}).then((res) => {
       console.log(res.data);
       setMyOutput(prevOutput => {
@@ -77,6 +83,15 @@ function App() {
     setMyInput({
       cmdStr: '', query:''
     })
+  }
+
+  function handleDB(event) {
+    setMyInput(prevInput => {
+      return {
+        ...prevInput,
+        [event.target.name]: event.target.value
+      }
+    });
   }
 
   function parseRawCmd(cmdLine) {
@@ -116,6 +131,7 @@ function App() {
         <label>outPut:{myOutput.cmdOutput}</label>
       </form>
       <br/>
+
       <form onSubmit={handleQuery}>
         <label>query:     </label>
         <input 
@@ -130,6 +146,16 @@ function App() {
         <br/>
         <label>outPut:{myOutput.queryOutput}</label>
       </form>
+      <br/>
+
+      <label>Current DB:</label>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <input type="radio" id="Firebase" value="Firebase" name="srcDB" checked={myInput.srcDB === 'Firebase'} onChange={handleDB}/>
+      <label htmlFor="Firebase">Firebase</label>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <input type="radio" id="MySQL" value="MySQL" name="srcDB" checked={myInput.srcDB === 'MySQL'} onChange={handleDB}/>
+      <label htmlFor="MySQL">MySQL</label>
+      <br/>
     </div>
     // <div>
     //   <form  className="form-group" onSubmit={handleSubmit}>

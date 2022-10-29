@@ -22,7 +22,8 @@ const sqlDB = mySQLApp.createConnection({
     database: 'playground'
 })
 
-
+srcDB = 'MySQL';
 
 exports.sqlDB = sqlDB
 exports.fbApp = this.fbApp
+exports.srcDB = this.srcDB
