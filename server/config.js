@@ -16,11 +16,13 @@ const firebaseConfig = {
 fbApp = firebase.initializeApp(firebaseConfig);
 
 const sqlDB = mySQLApp.createConnection({
-    user: 'admin',
+    user: 'root',
     host: 'localhost',
-    password: '123456',
+    password: 'Zzh12345',
     database: 'playground'
 })
+
+
 
 exports.sqlDB = sqlDB
 exports.fbApp = this.fbApp

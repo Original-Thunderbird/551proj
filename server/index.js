@@ -58,8 +58,10 @@ app.post("/upload", (req, res) => {
 app.get('/employees', (req, res) => {
     config.sqlDB.query("SELECT * FROM employees", (err, result) => {
         if(err) {
+
             console.log(err)
         } else {
+
             res.send(result)
         }
     });
@@ -68,8 +70,9 @@ app.get('/employees', (req, res) => {
 app.post('/cmd',  (req, res) => {
     var cmd = req.body.cmd, params = req.body.params, filename = req.body.filename;
     //console.log(cmd, params, filename)
-    var [content, err] = route.Route(cmd, params, filename);
-    res.send({content: content, err: err});
+    var content = "1", err = "";
+    route.Route(cmd, params, filename, function (result){res.send({content: result[0].name, err: err});});
+    //res.send({content: "", err: err});
 
     // switch(handle){
     //     case 1:

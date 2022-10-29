@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require("path");
-
+const config = require("./config")
+const {NULL} = require("mysql/lib/protocol/constants/types");
 // for funtions below, the uniform return format is [content (see each func for detailed explanation), error (need to convert to string format)]
 
 function mkdir(dir) {
@@ -16,12 +17,57 @@ function cd(dir) {
     // content: current working directory
     return [content, err];
 }
+class Entity{
+    constructor(key,list) {
+        this.key = key
+        this.list = []
+    }
+}
+function getTree(){
+    config.sqlDB.query("SELECT * FROM meta", function(err, result){
 
-function ls(file) {
-    var content = '', err = ''
+        if(err) {
+            throw err
+        } else {
+            var l = result;
+            var e = new Entity(0,undefined);
+            dfs(e, e.key, l);
+        }
+        return callback(result)
+    });
+}
+
+function dfs(e, cur, l){
+    console.log(e.key)
+    for(let i=0;i<l.length;i++){
+        if(l[i].parent==cur){
+            e.list.push(new Entity(l[i].inumber,undefined))
+        }
+    }
+    for(let i=0;i<e.list.length;i++){
+        dfs(e.list[i],e.list[i].key,l);
+    }
+}
+
+function ls(file, callback) {
+
+    var content = '', erro = '';
     console.log('ls:', file)
     // content: list of dirs & files in string format
-    return [content, err];
+
+    config.sqlDB.query("SELECT * FROM employees", function(err, result){
+
+        if(err) {
+
+            erro = err
+
+        } else {
+            content = result
+
+        }
+        return callback(result)
+    });
+
 }
 
 function cat(file) {

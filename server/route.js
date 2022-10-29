@@ -1,6 +1,6 @@
 const fsCmd = require("./cmd");
 
-function Route(cmd, params, filename) {
+function Route(cmd, params, filename, callback) {
     var err, content='';
     switch(cmd) {
         case 'cd':
@@ -10,7 +10,12 @@ function Route(cmd, params, filename) {
             [content, err] = fsCmd.mkdir(params[0]);
             break;
         case 'ls':
-            [content, err] = fsCmd.ls(params[0]);
+
+            fsCmd.ls(params[0],function (result){
+                content = result;
+                callback(result);
+                console.log(result)});
+            console.log(content);
             break;
         case 'cat':
             [content, err] = fsCmd.cat(params[0]);
