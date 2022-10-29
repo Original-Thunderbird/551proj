@@ -1,7 +1,7 @@
 const fsCmd = require("./cmd");
 
 function Route(cmd, params, filename, callback) {
-    var err, content='';
+    var err, content='', curDir='/';
     switch(cmd) {
         case 'cd':
             [content, err] = fsCmd.cd(params[0]);
