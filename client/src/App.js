@@ -1,5 +1,6 @@
 import React from 'react';
 import Axios from 'axios'
+import Explorer from './explorer';
 import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
@@ -103,9 +104,6 @@ function App() {
         filename = words[1]
         params = [words[2], words[3]];
         break;
-      case 'readPartition':
-        params = [words[1], words[2]];
-        break;
       default:
         params = [words[1]];
         break;
@@ -115,6 +113,8 @@ function App() {
 
   return (
     <div>
+      <Explorer inputCrtl={handleChange}/>
+
       <label>Current dir:{myOutput.curDir}</label>
       <form onSubmit={handleCmd}>
         <label>cmd:     </label>
@@ -126,7 +126,8 @@ function App() {
           value={myInput.cmdStr}
         />
         <button>Submit</button>
-        <label>{myOutput.cmdErr}</label>
+        <br/>
+        <label>err:{myOutput.cmdErr}</label>
         <br/>
         <label>outPut:{myOutput.cmdOutput}</label>
       </form>
@@ -142,7 +143,8 @@ function App() {
           value={myInput.query}
         />
         <button>Submit</button>
-        <label>{myOutput.queryErr}</label>
+        <br/>
+        <label>err:{myOutput.queryErr}</label>
         <br/>
         <label>outPut:{myOutput.queryOutput}</label>
       </form>
@@ -157,6 +159,8 @@ function App() {
       <label htmlFor="MySQL">MySQL</label>
       <br/>
     </div>
+
+
     // <div>
     //   <form  className="form-group" onSubmit={handleSubmit}>
     //     <label>name:     </label>

@@ -1,3 +1,25 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+}
+
 .App {
   text-align: center;
+}
+
+.lvl1Section {
+  border: solid;
+  padding: 10px;
+}
+
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
 }

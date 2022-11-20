@@ -10,7 +10,6 @@ function Route(cmd, params, filename, callback) {
             [content, err] = fsCmd.mkdir(params[0]);
             break;
         case 'ls':
-
             fsCmd.ls(params[0],function (result){
                 content = result;
                 callback(result);
@@ -25,12 +24,6 @@ function Route(cmd, params, filename, callback) {
             break;
         case 'put':
             [content, err] = fsCmd.put(filename, params[0], params[1]);
-            break;
-        case 'getPartitionLocations':
-            [content, err] = fsCmd.getPartitionLocations(params[0]);
-            break;
-        case 'readPartition':
-            [content, err] = fsCmd.readPartition(params[0], params[1]);
             break;
         default:
             err = 'do not support such command';

@@ -48,6 +48,13 @@ app.post('/cmd',  (req, res) => {
     //res.send({content: "", err: err});
 });
 
+app.post('/put', (req, res) => {
+    console.log(req.body.file);
+    console.log(req.body.file['bookid']);
+    console.log(req.body.numPart);
+    res.send('success');
+});
+
 app.post('/db', (req, res) => {
     config.srcDB = req.body.db;
     res.send(req.body.db);
