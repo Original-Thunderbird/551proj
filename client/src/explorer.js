@@ -6,8 +6,6 @@ import { MkdirForm, FilePartitionFrom } from './form.js';
 export default function Explorer(props) {
   let fileReader, numPart;
 
-  const inputRef = React.useRef(null);
-
   const [explorerState, setExplorerState] = React.useState({
       cmdErr: '', curDir: '/', cmdOutput: '', eList: '', fileContent: ''
   })
@@ -190,7 +188,7 @@ export default function Explorer(props) {
           <button onClick={handleClick}>Open file upload box</button>
           */
         }
-        <div className="column">
+        <div className="column2">
           <button className="btn btn-danger center" onClick={cdParent}>Go Back</button>
           {
             /** <button onClick={handleClick}>Upload File</button> */
@@ -229,7 +227,7 @@ export default function Explorer(props) {
               value={cmdInput.cdChildDir}
             />
             <span>&nbsp; &nbsp; &nbsp;</span>
-            <button className="btn btn-danger center" >Submit</button>
+            <button className="btn btn-danger center">Submit</button>
           </form>
           <br/>
           <form onSubmit={cat}>
@@ -242,7 +240,7 @@ export default function Explorer(props) {
               value={cmdInput.catFile}
             />
             <span>&nbsp; &nbsp; &nbsp;</span>
-            <button className="btn btn-danger center" >Submit</button>
+            <button className="btn btn-danger center">Submit</button>
           </form>
           <br/>
           <form onSubmit={rm}>
@@ -255,10 +253,10 @@ export default function Explorer(props) {
               value={cmdInput.rmTarget}
             />
             <span>&nbsp; &nbsp; &nbsp;</span>
-            <button className="btn btn-danger center modal-button" >Submit</button>
+            <button className="btn btn-danger center">Submit</button>
           </form>
         </div>
-        <div className="column">
+        <div className="column2">
           <label>File Content:{explorerState.fileContent}</label>
         </div>
       </div>

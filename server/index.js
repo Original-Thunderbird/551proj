@@ -40,11 +40,19 @@ app.post('/create', (req, res) => {
     }
 });
 
+app.post('/put', (req, res) => {
+    console.log(req.body.file);
+    console.log(req.body.file['bookid']);
+    console.log(req.body.numPart);
+    res.send('success');
+});
+
+
 app.post('/cmd',  (req, res) => {
     var cmd = req.body.cmd, params = req.body.params, filename = req.body.filename;
     //console.log(cmd, params, filename)
     var content = "1", err = "";
-    route.Route(cmd, params, filename, function (result){res.send({content: result[0].name, err: err});});
+    route.Route(cmd, params, filename, function (result){res.send({content: result, err: err});});
     //res.send({content: "", err: err});
 });
 

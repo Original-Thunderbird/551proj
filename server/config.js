@@ -32,5 +32,6 @@ const sqlDBB = mySQLApp.createConnection({
 srcDB = 'MySQL';
 
 exports.sqlDB = sqlDBB
+exports.sqlDB = sqlDB
 exports.fbApp = this.fbApp
 exports.srcDB = this.srcDB

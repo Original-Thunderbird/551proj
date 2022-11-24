@@ -1,6 +1,7 @@
 import React from 'react';
 import Axios from 'axios'
 import Explorer from './explorer';
+import Query from './query';
 import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
@@ -114,6 +115,8 @@ function App() {
   return (
     <div>
       <Explorer inputCrtl={handleChange}/>
+      <br/>
+      <Query/>
 
       <label>Current dir:{myOutput.curDir}</label>
       <form onSubmit={handleCmd}>

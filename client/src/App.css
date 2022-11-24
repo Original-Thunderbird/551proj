@@ -18,8 +18,13 @@ body {
 
 .row {
   display: flex;
+  flex-direction: row;
 }
 
-.column {
-  flex: 50%;
+.column2 {
+  flex: 1;
+}
+
+.column3 {
+  flex: 1;
 }
