@@ -68,7 +68,8 @@ app.post('/db', (req, res) => {
     res.send(req.body.db);
 });
 
-app.post('/query', (req) => {
+app.post('/query', (req, res) => {
+    console.log(req.body.rawQuery);
     var [output, err] = analysis.HandleQuery(req.body.rawQuery)
     res.send({output: output, err: err});
 });

@@ -1,16 +1,20 @@
 import React from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
+import Axios from 'axios';
 import Select from 'react-select';
 
 export default function Query(props) {
   const [studentInput, setStudentInput] = React.useState({
-    name: "", spec:"", hired: undefined, company: "", role: "", FoI: [], cntField: ""
+    name: "", hired: undefined, company: "", role: ""
   });
 
   const [companyInput, setCompanyInput] = React.useState({
     name: "", industry: ""
   });
+
+  const [localSpec, setLocalSpec] = React.useState(null);
+  const [localFoI, setLocalFoI] = React.useState(['Name', 'Spec', 'Hired', 'Company', 'Role']);
+  const [localFtC, setLocalFtC] = React.useState(null);
+  const [output, setOutput] = React.useState("");
 
   const specOptions = [
     { value: 'General (28)', label: 'General (28)' },
@@ -33,9 +37,7 @@ export default function Query(props) {
     { value: 'Role', label: 'Role'}
   ];
 
-  const [localSpec, setLocalSpec] = React.useState(null);
-  const [localFoI, setLocalFoI] = React.useState(['Name', 'Spec', 'Hired', 'Company', 'Role']);
-  const [localFtC, setLocalFtC] = React.useState(null);
+  
   
   function handleSpecChange(event) {
     setLocalSpec(event.value);
@@ -80,22 +82,81 @@ export default function Query(props) {
   }
 
   function submitStudentQuery(event) {
-    // console.log("localSpec", localSpec);
-    // console.log("localFoI", localFoI);
-    // console.log("localFtC", localFtC);
-    setStudentInput(prevStudentInput => {
-      return {
-        ...prevStudentInput,
-        spec: localSpec,
-        FoI: localFoI,
-        cntField: localFtC
+    event.preventDefault();
+    // setStudentInput(prevStudentInput => {
+    //   return {
+    //     ...prevStudentInput,
+    //     spec: localSpec,
+    //     FoI: localFoI,
+    //     cntField: localFtC
+    //   }
+    // });
+    let jstr = JSON.stringify(
+      {
+        select: localFoI,
+        from: "STUDENT",
+        where: [
+          {
+            attr: "Name",
+            value: studentInput.name,
+            method: "="
+          },
+          {
+            name: "Spec",
+            value: localSpec,
+            method: "="
+          },
+          {
+            name: "Hired",
+            value: studentInput.hired,
+            method: "="
+          },
+          {
+            name: "Company",
+            value: studentInput.company,
+            method: "="
+          },
+          {
+            name: "Role",
+            value: studentInput.role,
+            method: "="
+          }
+        ],
+        groupby: localFtC
       }
+    )
+    console.log(jstr)
+    Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
+      console.log(res);
+      //setOutput(res);
     });
-
   }
 
   function submitCompanyQuery(event) {
-
+    event.preventDefault();
+    let jstr = JSON.stringify(
+      {
+        select: ["Name", "Industry"],
+        from: "COMPANY",
+        where: [
+          {
+            attr: "Name",
+            value: companyInput.name,
+            method: "="
+          },
+          {
+            attr: "Industry",
+            value: companyInput.industry,
+            method: "="
+          }
+        ]
+      }
+    );
+    console.log(jstr)
+    Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
+      console.log(res);
+      //setOutput(res);
+    });
   }
 
   return (
@@ -201,6 +262,7 @@ export default function Query(props) {
             <button className="btn btn-danger center">Submit</button>
           </div>
         </form>
+        <br/>
         <form className="lvl1Section row" onSubmit={submitCompanyQuery}>
           <h3>Company:</h3>
           <div className="column2">
@@ -229,7 +291,7 @@ export default function Query(props) {
       </div>
       
       <div className="column2">
-        <label>query result:</label>
+        <label>query result:{output}</label>
       </div>
     </div>
   )

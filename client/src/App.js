@@ -114,8 +114,16 @@ function App() {
 
   return (
     <div>
+      <label>Current DB:</label>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <input type="radio" id="Firebase" value="Firebase" name="srcDB" checked={myInput.srcDB === 'Firebase'} onChange={handleDB}/>
+      <label htmlFor="Firebase">Firebase</label>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <input type="radio" id="MySQL" value="MySQL" name="srcDB" checked={myInput.srcDB === 'MySQL'} onChange={handleDB}/>
+      <label htmlFor="MySQL">MySQL</label>
+      <br/><br/>
       <Explorer inputCrtl={handleChange}/>
-      <br/>
+      <br/><br/>
       <Query/>
 
       <label>Current dir:{myOutput.curDir}</label>
@@ -153,55 +161,10 @@ function App() {
       </form>
       <br/>
 
-      <label>Current DB:</label>
-      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-      <input type="radio" id="Firebase" value="Firebase" name="srcDB" checked={myInput.srcDB === 'Firebase'} onChange={handleDB}/>
-      <label htmlFor="Firebase">Firebase</label>
-      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-      <input type="radio" id="MySQL" value="MySQL" name="srcDB" checked={myInput.srcDB === 'MySQL'} onChange={handleDB}/>
-      <label htmlFor="MySQL">MySQL</label>
-      <br/>
+      
+
+      
     </div>
-
-
-    // <div>
-    //   <form  className="form-group" onSubmit={handleSubmit}>
-    //     <label>name:     </label>
-    //     <input 
-    //       type="text"
-    //       placeholder="your name"
-    //       onChange={handleChange}
-    //       name="name"
-    //       value={formData.name}
-    //     />
-    //     <label>age:     </label>
-    //     <input 
-    //       type="text"
-    //       placeholder="your age"
-    //       onChange={handleChange}
-    //       name="age"
-    //       value={formData.age}
-    //     />
-    //     <label>country:     </label>
-    //     <input 
-    //       type="text"
-    //       placeholder="your country"
-    //       onChange={handleChange}
-    //       name="country"
-    //       value={formData.country}
-    //     />
-    //     <button>Submit</button>
-    //   </form>
-    //   {/* <button className="btn btn-primary" onClick={getEmployees}>GetAll</button>
-    //   {empList.map(e => {
-    //     return <div>{e.name},{e.age},{e.country}</div>
-    //   })} */}
-    //   <form className="App" onSubmit={uploadFile}>
-    //     <input type="file" name="file" onChange={saveFile} />
-    //     <button>Upload</button>
-    //   </form>
-    // </div>
-    
   );
 }
 
