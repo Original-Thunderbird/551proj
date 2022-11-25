@@ -18,6 +18,18 @@ export default function Explorer(props) {
     mkdirVsblty: false, putVsblty: false
   })
 
+  React.useEffect(() => {
+    console.log("init");
+    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: ['/']}).then((res) => {
+      setExplorerState(prevExplorerState => {
+        return {
+          ...prevExplorerState,
+          eList: res.data.content
+        }
+      })
+    });
+  });
+
   function openMkdirPopup() {
     setCntnrVsblty(prevVsblty => {
       return {
@@ -55,22 +67,22 @@ export default function Explorer(props) {
   }
 
   function cdParent(event) {
-      Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: ['..']}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            curDir: res.data.content
-          }
-        })
-      });
-      Axios.post('http://localhost:3001/cmd', {cmd: 'ls'}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            eList: res.data.content
-          }
-        })
-      });
+    Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: ['..']}).then((res) => {
+      setExplorerState(prevExplorerState => {
+        return {
+          ...prevExplorerState,
+          curDir: res.data.content
+        }
+      })
+    });
+    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+      setExplorerState(prevExplorerState => {
+        return {
+          ...prevExplorerState,
+          eList: res.data.content
+        }
+      })
+    });
   }
 
   function cdChild(event) {
@@ -83,7 +95,7 @@ export default function Explorer(props) {
         }
       })
     });
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls'}).then((res) => {
+    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
       setExplorerState(prevExplorerState => {
         return {
           ...prevExplorerState,
@@ -117,7 +129,7 @@ export default function Explorer(props) {
         }
       })
     });
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls'}).then((res) => {
+    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
       setExplorerState(prevExplorerState => {
         return {
           ...prevExplorerState,
@@ -165,7 +177,7 @@ export default function Explorer(props) {
   function rm() {
     Axios.post('http://localhost:3001/cmd', {cmd: 'rm', params: [cmdInput.rmTarget]}).then((res) => {
     });
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls'}).then((res) => {
+    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
       setExplorerState(prevExplorerState => {
         return {
           ...prevExplorerState,
@@ -244,10 +256,10 @@ export default function Explorer(props) {
           </form>
           <br/>
           <form onSubmit={rm}>
-            <label>Which file/folder you want to delete? &nbsp; &nbsp; &nbsp;</label>
+            <label>Which file you want to delete? &nbsp; &nbsp; &nbsp;</label>
             <input 
               type="text"
-              placeholder="target file/directory"
+              placeholder="target file"
               onChange={props.inputCrtl}
               name="rmTarget"
               value={cmdInput.rmTarget}

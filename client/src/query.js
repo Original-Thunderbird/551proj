@@ -67,11 +67,6 @@ export default function Query(props) {
     });
   }
 
-  function onSelect(key, event) {
-    console.log(key)
-    console.log(event)
-  }
-
   function handleCompanyChange(event) {
     setCompanyInput(prevCompanyInput => {
       return {
@@ -83,14 +78,6 @@ export default function Query(props) {
 
   function submitStudentQuery(event) {
     event.preventDefault();
-    // setStudentInput(prevStudentInput => {
-    //   return {
-    //     ...prevStudentInput,
-    //     spec: localSpec,
-    //     FoI: localFoI,
-    //     cntField: localFtC
-    //   }
-    // });
     let jstr = JSON.stringify(
       {
         select: localFoI,
