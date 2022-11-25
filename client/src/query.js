@@ -37,8 +37,6 @@ export default function Query(props) {
     { value: 'Role', label: 'Role'}
   ];
 
-  
-  
   function handleSpecChange(event) {
     setLocalSpec(event.value);
     console.log("localSpec", localSpec);
