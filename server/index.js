@@ -15,7 +15,7 @@ app.use(fileUpload());
 
 handle = 1
 
-app.post('/create', (req, res) => {
+app.post('/sqltest', (req, res) => {
     console.log("body: ", req.body)
     const name = req.body.name
     const age = req.body.age
@@ -65,6 +65,7 @@ app.post('/put', (req, res) => {
 
 app.post('/db', (req, res) => {
     config.srcDB = req.body.db;
+    console.log(config.srcDB);
     res.send(req.body.db);
 });
 

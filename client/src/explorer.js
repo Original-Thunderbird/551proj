@@ -3,7 +3,7 @@ import Axios from 'axios';
 import Container from './container.js';
 import { MkdirForm, FilePartitionFrom } from './form.js';
 
-export default function Explorer(props) {
+export default function Explorer() {
   let fileReader, numPart;
 
   const [explorerState, setExplorerState] = React.useState({
@@ -28,7 +28,7 @@ export default function Explorer(props) {
         }
       })
     });
-  });
+  }, []);
 
   function openMkdirPopup() {
     setCntnrVsblty(prevVsblty => {
@@ -66,7 +66,16 @@ export default function Explorer(props) {
     })
   }
 
-  function cdParent(event) {
+  function handleCmdChange(event) {
+    setCmdInput(prevInput => {
+      return {
+        ...prevInput,
+        [event.target.name]: event.target.value
+      }
+    })
+  }
+
+  function cdParent() {
     Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: ['..']}).then((res) => {
       setExplorerState(prevExplorerState => {
         return {
@@ -85,69 +94,84 @@ export default function Explorer(props) {
     });
   }
 
-  function cdChild(event) {
-    event.preventDefault();
-    Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: [cmdInput.cdChildDir]}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          curDir: res.data.content
-        }
-      })
-    });
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          eList: res.data.content
-        }
-      })
-    });
+  function cdChild() {
+    if(cmdInput.cdChildDir === '') {
+      alert('target directory cannot be empty');
+    }
+    else {
+      Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: [cmdInput.cdChildDir]}).then((res) => {
+        setExplorerState(prevExplorerState => {
+          return {
+            ...prevExplorerState,
+            curDir: res.data.content
+          }
+        })
+      });
+      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+        setExplorerState(prevExplorerState => {
+          return {
+            ...prevExplorerState,
+            eList: res.data.content
+          }
+        })
+      });
+    }
   }
 
-  function cat(event) {
-    event.preventDefault();
-    Axios.post('http://localhost:3001/cmd', {cmd: 'cat', params: [cmdInput.catFile]}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          fileContent: res.data.content
-        }
-      })
-    });
+  function cat() {
+    if(cmdInput.catFile === '') {
+      alert('file name cannot be empty');
+    }
+    else {
+      Axios.post('http://localhost:3001/cmd', {cmd: 'cat', params: [cmdInput.catFile]}).then((res) => {
+        setExplorerState(prevExplorerState => {
+          return {
+            ...prevExplorerState,
+            fileContent: res.data.content
+          }
+        })
+      });
+    }
   }
 
   function mkdir(event) {
-    event.preventDefault(event);
-    console.log(event.target.name.value);
-    closeMkdirPopup();
-    Axios.post('http://localhost:3001/cmd', {cmd: 'mkdir', params: [event.target.name.value]}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          curDir: res.data.content
-        }
-      })
-    });
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          eList: res.data.content
-        }
-      })
-    });
+    if(event.target.name.value === "") {
+      alert('please input folder name');
+    }
+    else {
+      closeMkdirPopup();
+      Axios.post('http://localhost:3001/cmd', {cmd: 'mkdir', params: [event.target.name.value]}).then((res) => {
+        console.log(res.data);
+      });
+      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+        setExplorerState(prevExplorerState => {
+          return {
+            ...prevExplorerState,
+            eList: res.data.content
+          }
+        })
+      });
+    }
   }
 
   const put = (data) => {
-    closePutPopup();
-    numPart = data['partNum'];
-    fileReader = new FileReader();
-    fileReader.onloadend = handleFileRead;
-    fileReader.readAsText(data['file'][0]);
+    if(data.file.length === 0) {
+      alert('please select a file');
+    }
+    else if(data.partNum === '') {
+      alert('please input number of partitions');
+    }
+    else {
+      closePutPopup();
+      numPart = data['partNum'];
+      fileReader = new FileReader();
+      fileReader.onloadend = handleFileRead;
+      fileReader.readAsText(data['file'][0]);
+    }
   }
 
-  const handleFileRead = (e) => {
+  const handleFileRead = (event) => {
+    event.preventDefault(event);
     Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), numPart: numPart}).then((res) => {});
     Axios.post('http://localhost:3001/cmd', {cmd: 'ls'}).then((res) => {
       setExplorerState(prevExplorerState => {
@@ -159,52 +183,28 @@ export default function Explorer(props) {
     });
   };
 
-  // function handleClick() {
-  //   console.log(inputRef);
-  //   inputRef.current.click();
-  // }
-
-  // function handleFileChange(event) {
-  //   const data = new FormData();
-  //   var file = event.target.files[0];
-  //   var fileName = event.target.files[0].name;
-  //   console.log(file);
-  //   console.log(fileName);
-  //   data.append('file', file, fileName);
-  //   console.log(data)
-  // }
-
   function rm() {
-    Axios.post('http://localhost:3001/cmd', {cmd: 'rm', params: [cmdInput.rmTarget]}).then((res) => {
-    });
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          eList: res.data.content
-        }
-      })
-    });
+    if(cmdInput.rmTarget === '') {
+      alert('file name cannot be empty');
+    }
+    else {
+      Axios.post('http://localhost:3001/cmd', {cmd: 'rm', params: [cmdInput.rmTarget]}).then((res) => {
+      });
+      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+        setExplorerState(prevExplorerState => {
+          return {
+            ...prevExplorerState,
+            eList: res.data.content
+          }
+        })
+      });
+    }
   }                         
 
   return (
       <div className="lvl1Section row">
-        {
-          /*
-          <input
-            style={{display: 'none'}}
-            ref={inputRef}
-            type="file"
-            onChange={handleFileChange}
-          />
-          <button onClick={handleClick}>Open file upload box</button>
-          */
-        }
         <div className="column2">
-          <button className="btn btn-danger center" onClick={cdParent}>Go Back</button>
-          {
-            /** <button onClick={handleClick}>Upload File</button> */
-          }
+          {explorerState.curDir !== '/' ? <button className="btn btn-danger center" onClick={cdParent}>Go Back</button> : null}
           <span>&nbsp; &nbsp; &nbsp;</span>
           <Container 
             triggerText='Upload File' 
@@ -224,9 +224,9 @@ export default function Explorer(props) {
             visibility={cntnrVsblty.mkdirVsblty}
           />
           <br/>
-          <label>Current dir:{explorerState.curDir}</label>
+          <label>Current dir:&nbsp; &nbsp; {explorerState.curDir}</label>
           <br/>
-          <label>Content:{explorerState.eList}</label>
+          <label>Content:&nbsp; &nbsp; {explorerState.eList}</label>
           <hr/>
           <br/>
           <form onSubmit={cdChild}>
@@ -234,7 +234,7 @@ export default function Explorer(props) {
             <input 
               type="text"
               placeholder="target directory"
-              onChange={props.inputCrtl}
+              onChange={handleCmdChange}
               name="cdChildDir"
               value={cmdInput.cdChildDir}
             />
@@ -247,7 +247,7 @@ export default function Explorer(props) {
             <input 
               type="text"
               placeholder="target file"
-              onChange={props.inputCrtl}
+              onChange={handleCmdChange}
               name="catFile"
               value={cmdInput.catFile}
             />
@@ -260,7 +260,7 @@ export default function Explorer(props) {
             <input 
               type="text"
               placeholder="target file"
-              onChange={props.inputCrtl}
+              onChange={handleCmdChange}
               name="rmTarget"
               value={cmdInput.rmTarget}
             />

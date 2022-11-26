@@ -257,7 +257,7 @@ export default function Query(props) {
               name="name"
               onChange={handleCompanyChange}
               value={companyInput.name}
-              size="50"
+              size="30"
             />
             <br/><br/>
             <label>Industry:&nbsp; &nbsp; </label>
@@ -266,7 +266,7 @@ export default function Query(props) {
               name="industry"
               onChange={handleCompanyChange}
               value={companyInput.industry}
-              size="50"
+              size="30"
             />
           </div>
           <div className="column2">

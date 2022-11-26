@@ -13,8 +13,8 @@ export class Container extends Component {
     this.toggleScrollLock();
   };
   closeModal = () => {
-    this.props.setVisible();
-    //this.setState({ isShown: false });
+    this.props.setInvisible();
+    this.setState({ isShown: false });
     this.TriggerButton.focus();
     this.toggleScrollLock();
   };
