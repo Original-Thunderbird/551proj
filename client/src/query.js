@@ -11,6 +11,10 @@ export default function Query(props) {
     name: "", industry: ""
   });
 
+  const [specInput, setSpecInput] = React.useState({
+    min: 0, max: 600
+  });
+
   const [localSpec, setLocalSpec] = React.useState(null);
   const [localFoI, setLocalFoI] = React.useState(['Name', 'Spec', 'Hired', 'Company', 'Role']);
   const [localFtC, setLocalFtC] = React.useState(null);
@@ -74,6 +78,15 @@ export default function Query(props) {
     });
   }
 
+  function handleSpecChange(event) {
+    setSpecInput(prevSpecInput => {
+      return {
+        ...prevSpecInput,
+        [event.target.name]: event.target.value
+      }
+    });
+  }
+
   function submitStudentQuery(event) {
     event.preventDefault();
     let jstr = JSON.stringify(
@@ -110,7 +123,6 @@ export default function Query(props) {
         groupby: localFtC
       }
     )
-    console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
       console.log(res);
       //setOutput(res);
@@ -133,6 +145,33 @@ export default function Query(props) {
             attr: "Industry",
             value: companyInput.industry,
             method: "="
+          }
+        ]
+      }
+    );
+    console.log(jstr)
+    Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
+      console.log(res);
+      //setOutput(res);
+    });
+  }
+
+  function submitSpecQuery(event) {
+    event.preventDefault();
+    let jstr = JSON.stringify(
+      {
+        select: ["Name", "Size"],
+        from: "SPEC",
+        where: [
+          {
+            attr: "Size",
+            value: specInput.min,
+            method: ">="
+          },
+          {
+            attr: "Size",
+            value: specInput.max,
+            method: "<="
           }
         ]
       }
@@ -252,6 +291,7 @@ export default function Query(props) {
           <h4>Company:</h4>
           <div className="column2">
             <label>Name:&nbsp; &nbsp; </label>
+            <br/>
             <input
               type="text"
               name="name"
@@ -272,6 +312,36 @@ export default function Query(props) {
           <div className="column2">
             <button className="btn btn-danger center">Submit</button>
           </div>
+        </form>
+        <br/>
+        <form className="lvl2Section" onSubmit={submitSpecQuery}>
+          <h4>Specification:</h4>
+          <div className="column2">
+            <label>Size:&nbsp; &nbsp; </label>
+            <br/>
+            <label>min:&nbsp; &nbsp; </label>
+            <input
+              type="number"
+              name="min"
+              onChange={handleSpecChange}
+              value={specInput.min}
+              size="10"
+              min="0"
+            />
+            <label>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </label>
+            <label>max:&nbsp; &nbsp; </label>
+            <input
+              type="number"
+              name="max"
+              onChange={handleSpecChange}
+              value={specInput.max}
+              size="10"
+              max="600"
+            />
+          </div>
+          <label>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </label>
+          <button className="btn btn-danger center">Submit</button>
+
         </form>
       </div>
       
