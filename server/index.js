@@ -41,10 +41,12 @@ app.post('/sqltest', (req, res) => {
 });
 
 app.post('/put', (req, res) => {
-    console.log(req.body.file);
-    console.log(req.body.file['bookid']);
-    console.log(req.body.numPart);
-    res.send('success');
+    // console.log(req.body.file);
+    // console.log(req.body);
+    // console.log(req.body.numPart);
+    var err = "Put not success", content  = "Success"
+    route.Route("put", [0,req.body.numPart], req.body.file, function (result){res.send({content: result, err: err});})
+
 });
 
 
@@ -71,8 +73,11 @@ app.post('/db', (req, res) => {
 
 app.post('/query', (req, res) => {
     console.log(req.body.rawQuery);
-    var [output, err] = analysis.HandleQuery(req.body.rawQuery)
-    res.send({output: output, err: err});
+    var output = '', err = ''
+    analysis.HandleQuery(req.body.rawQuery,(params)=>{
+        res.send({output: params[0], err: params[1]});
+    })
+
 });
 
 

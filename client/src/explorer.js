@@ -121,6 +121,7 @@ export default function Explorer() {
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'cat', params: [cmdInput.catFile]}).then((res) => {
+        console.log(res.data.content)
         setExplorerState(prevExplorerState => {
           return {
             ...prevExplorerState,

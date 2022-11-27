@@ -89,7 +89,7 @@ function Route(cmd, params, filename, callback) {
             });
             break;
         case 'put':
-            fsCmd.put(filename, getRealPath(params[0]), params[1], function (result) {
+            fsCmd.put(filename, curDir, params[1], function (result) {
                 callback(result)
             });
             break;

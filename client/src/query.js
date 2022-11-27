@@ -87,22 +87,22 @@ export default function Query(props) {
             method: "="
           },
           {
-            name: "Spec",
+            attr: "Spec",
             value: localSpec,
             method: "="
           },
           {
-            name: "Hired",
+            attr: "Hired",
             value: studentInput.hired,
             method: "="
           },
           {
-            name: "Company",
+            attr: "Company",
             value: studentInput.company,
             method: "="
           },
           {
-            name: "Role",
+            attr: "Role",
             value: studentInput.role,
             method: "="
           }
