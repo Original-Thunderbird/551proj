@@ -16,7 +16,7 @@ export default function Query(props) {
   });
 
   const [localSpec, setLocalSpec] = React.useState(null);
-  const [localFoI, setLocalFoI] = React.useState(['Name', 'Spec', 'Hired', 'Company', 'Role']);
+  const [localFoI, setLocalFoI] = React.useState(['Name', 'SpecName', 'Hired', 'CompName', 'Role']);
   const [localFtC, setLocalFtC] = React.useState(null);
   const [output, setOutput] = React.useState("");
 
@@ -110,7 +110,7 @@ export default function Query(props) {
             method: "="
           },
           {
-            attr: "CompanyName",
+            attr: "CompName",
             value: studentInput.company,
             method: "="
           },
