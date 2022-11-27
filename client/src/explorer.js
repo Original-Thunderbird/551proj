@@ -4,7 +4,7 @@ import Container from './container.js';
 import { MkdirForm, FilePartitionFrom } from './form.js';
 
 export default function Explorer() {
-  let fileReader, numPart;
+  let fileReader, numPart, fileName;
 
   const [explorerState, setExplorerState] = React.useState({
       cmdErr: '', curDir: '/', cmdOutput: '', eList: '', fileContent: ''
@@ -163,6 +163,9 @@ export default function Explorer() {
     }
     else {
       closePutPopup();
+      console.log(data)
+      fileName = data['file'][0]['name'];
+      console.log(fileName)
       numPart = data['partNum'];
       fileReader = new FileReader();
       fileReader.onloadend = handleFileRead;
@@ -172,7 +175,7 @@ export default function Explorer() {
 
   const handleFileRead = (event) => {
     event.preventDefault(event);
-    Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), numPart: numPart}).then((res) => {});
+    Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), name: fileName, numPart: numPart}).then((res) => {});
     Axios.post('http://localhost:3001/cmd', {cmd: 'ls'}).then((res) => {
       setExplorerState(prevExplorerState => {
         return {

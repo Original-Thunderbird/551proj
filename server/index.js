@@ -44,6 +44,7 @@ app.post('/put', (req, res) => {
     // console.log(req.body.file);
     // console.log(req.body);
     // console.log(req.body.numPart);
+    console.log(req.body.name);
     var err = "Put not success", content  = "Success"
     route.Route("put", [0,req.body.numPart], req.body.file, function (result){res.send({content: result, err: err});})
 
