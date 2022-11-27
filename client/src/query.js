@@ -78,7 +78,7 @@ export default function Query(props) {
     });
   }
 
-  function handleSpecChange(event) {
+  function handleSpecQueryChange(event) {
     setSpecInput(prevSpecInput => {
       return {
         ...prevSpecInput,
@@ -323,7 +323,7 @@ export default function Query(props) {
             <input
               type="number"
               name="min"
-              onChange={handleSpecChange}
+              onChange={handleSpecQueryChange}
               value={specInput.min}
               size="10"
               min="0"
@@ -333,7 +333,7 @@ export default function Query(props) {
             <input
               type="number"
               name="max"
-              onChange={handleSpecChange}
+              onChange={handleSpecQueryChange}
               value={specInput.max}
               size="10"
               max="600"
