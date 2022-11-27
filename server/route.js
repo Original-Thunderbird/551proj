@@ -59,23 +59,15 @@ function Route(cmd, params, filename, callback) {
             });
             break;
         case 'ls':
-            if(config.srcDB === 'MySQL') {
-              fsCmd.ls(curInumber,function (result){
-                content = result;
-                callback(result);
-              });
-            }
-            else {
-
-            }
-            //console.log(content);
+            fsCmd.ls(curInumber,function (result){
+              content = result;
+              callback(result);
+            });
             break;
         case 'cat':
-            if(config.srcDB === 'MySQL') {
-              fsCmd.cat(getRealPath(params[0]),function (result) {
-                callback(result)
-              });
-            } 
+            fsCmd.cat(getRealPath(params[0]),function (result) {
+              callback(result)
+            });
             break;
         case 'rm':
             fsCmd.rm(getRealPath(params[0]),function (result) {
@@ -85,7 +77,6 @@ function Route(cmd, params, filename, callback) {
                 else{
                     callback("Delete successfully")
                 }
-
             });
             break;
         case 'put':

@@ -13,31 +13,22 @@ app.use(express.json())
 app.use(express.static("files"));
 app.use(fileUpload());
 
-handle = 1
-
 app.post('/sqltest', (req, res) => {
     console.log("body: ", req.body)
     const name = req.body.name
     const age = req.body.age
     const country = req.body.country
 
-    switch(handle){
-        case 1:
-            config.sqlDB.query(
-                'INSERT INTO test (name, age, country) VALUES (?, ?, ?)', 
-                [name, age, country], (err, result) => {
-                    if(err) {
-                        console.log(err)
-                    } else {
-                        res.send("Vals inserted")
-                    }
-                }
-            );
-            break;
-        // case 2:
-        //     emp.add(req.body)
-        //     res.send("Vals inserted")
-    }
+    config.sqlDB.query(
+        'INSERT INTO test (name, age, country) VALUES (?, ?, ?)', 
+        [name, age, country], (err, result) => {
+            if(err) {
+                console.log(err)
+            } else {
+                res.send("Vals inserted")
+            }
+        }
+    );
 });
 
 app.post('/put', (req, res) => {
@@ -46,24 +37,24 @@ app.post('/put', (req, res) => {
     // console.log(req.body.numPart);
     console.log(req.body.name);
     var err = "Put not success", content  = "Success"
-    route.Route("put", [0,req.body.numPart], req.body.file, function (result){res.send({content: result, err: err});})
+    if(config.srcDB === 'MySQL') {
+      route.Route("put", [0,req.body.numPart], req.body.file, function (result){res.send({content: result, err: err});})
+    }
+    else {
 
+    }
 });
-
 
 app.post('/cmd',  (req, res) => {
     var cmd = req.body.cmd, params = req.body.params, filename = req.body.filename;
     //console.log(cmd, params, filename)
     var content = "1", err = "";
-    route.Route(cmd, params, filename, function (result){res.send({content: result, err: err});});
-    //res.send({content: "", err: err});
-});
+    if(config.srcDB === 'MySQL') {
+      route.Route(cmd, params, filename, function (result){res.send({content: result, err: err});});
+    }
+    else {
 
-app.post('/put', (req, res) => {
-    console.log(req.body.file);
-    console.log(req.body.file['bookid']);
-    console.log(req.body.numPart);
-    res.send('success');
+    }
 });
 
 app.post('/db', (req, res) => {
@@ -75,10 +66,14 @@ app.post('/db', (req, res) => {
 app.post('/query', (req, res) => {
     console.log(req.body.rawQuery);
     var output = '', err = ''
-    analysis.HandleQuery(req.body.rawQuery,(params)=>{
+    if(config.srcDB === 'MySQL') {
+      analysis.HandleQuery(req.body.rawQuery,(params)=>{
         res.send({output: params[0], err: params[1]});
-    })
-
+      })
+    }
+    else {
+      
+    }
 });
 
 
