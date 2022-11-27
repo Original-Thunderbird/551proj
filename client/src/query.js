@@ -31,9 +31,9 @@ export default function Query(props) {
 
   const fieldOptions = [
     { value: 'Name', label: 'Name'},
-    { value: 'Spec', label: 'Spec'},
+    { value: 'SpecName', label: 'SpecName'},
     { value: 'Hired', label: 'Hired'},
-    { value: 'Company', label: 'Company'},
+    { value: 'CompanyName', label: 'CompanyName'},
     { value: 'Role', label: 'Role'}
   ];
 
@@ -87,7 +87,7 @@ export default function Query(props) {
             method: "="
           },
           {
-            attr: "Spec",
+            attr: "SpecName",
             value: localSpec,
             method: "="
           },
@@ -97,7 +97,7 @@ export default function Query(props) {
             method: "="
           },
           {
-            attr: "Company",
+            attr: "CompanyName",
             value: studentInput.company,
             method: "="
           },
@@ -121,11 +121,11 @@ export default function Query(props) {
     event.preventDefault();
     let jstr = JSON.stringify(
       {
-        select: ["Name", "Industry"],
+        select: ["Company", "Industry"],
         from: "COMPANY",
         where: [
           {
-            attr: "Name",
+            attr: "Company",
             value: companyInput.name,
             method: "="
           },
