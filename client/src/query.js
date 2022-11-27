@@ -125,7 +125,7 @@ export default function Query(props) {
     )
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
       console.log(res);
-      //setOutput(res);
+      setOutput(res.data.output);
     });
   }
 
@@ -152,7 +152,7 @@ export default function Query(props) {
     console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
       console.log(res);
-      //setOutput(res);
+      setOutput(res.data.output);
     });
   }
 
@@ -179,7 +179,7 @@ export default function Query(props) {
     console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
       console.log(res);
-      //setOutput(res);
+      setOutput(res.data.output);
     });
   }
 
