@@ -98,13 +98,11 @@ export default function Explorer() {
   }
 
   function cdChild(event) {
-    console.log("here");
     event.preventDefault();
     if(cmdInput.cdChildDir === '') {
       alert('target directory cannot be empty');
     }
     else {
-      console.log("in cdChild:", cmdInput.cdChildDir);
       Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: [cmdInput.cdChildDir]}).then((res) => {
         setExplorerState(prevExplorerState => {
           return {
@@ -116,7 +114,8 @@ export default function Explorer() {
     }
   }
 
-  function cat() {
+  function cat(event) {
+    event.preventDefault();
     if(cmdInput.catFile === '') {
       alert('file name cannot be empty');
     }
@@ -133,6 +132,7 @@ export default function Explorer() {
   }
 
   function mkdir(event) {
+    event.preventDefault();
     if(event.target.name.value === "") {
       alert('please input folder name');
     }
@@ -182,7 +182,8 @@ export default function Explorer() {
     });
   };
 
-  function rm() {
+  function rm(event) {
+    event.preventDefault();
     if(cmdInput.rmTarget === '') {
       alert('file name cannot be empty');
     }
