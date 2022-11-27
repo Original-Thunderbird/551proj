@@ -97,11 +97,14 @@ export default function Explorer() {
     });
   }
 
-  function cdChild() {
+  function cdChild(event) {
+    console.log("here");
+    event.preventDefault();
     if(cmdInput.cdChildDir === '') {
       alert('target directory cannot be empty');
     }
     else {
+      console.log("in cdChild:", cmdInput.cdChildDir);
       Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: [cmdInput.cdChildDir]}).then((res) => {
         setExplorerState(prevExplorerState => {
           return {

@@ -6,12 +6,13 @@ const {NULL} = require("mysql/lib/protocol/constants/types");
 
 function mkdir(ino, dir, callback) {
     var content = 'whatever', err = ''
-    console.log('mkdir:', dir)
+    console.log('ino:', ino, ' dir:', dir)
     // content: anything you may want to tell the user
     config.sqlDB.query("SELECT * FROM meta WHERE PARENT = "+ino+" AND FILENAME ='"+dir+"'", function(err, result){
-        console.log(result)
+        console.log('result:',result)
         if(err) {
-            throw err
+          console.log(err)
+          throw err
         } else {
             //console.log(result[0].filename)
             if(result.length>0){

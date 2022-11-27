@@ -24,7 +24,7 @@ app.post('/sqltest', (req, res) => {
     switch(handle){
         case 1:
             config.sqlDB.query(
-                'INSERT INTO employees (name, age, country) VALUES (?, ?, ?)', 
+                'INSERT INTO test (name, age, country) VALUES (?, ?, ?)', 
                 [name, age, country], (err, result) => {
                     if(err) {
                         console.log(err)

@@ -24,7 +24,7 @@ function getRealPath(path) {
 }
 
 function Route(cmd, params, filename, callback) {
-    var err, content='', curDir='/';
+    var err, content='';
     switch(cmd) {
         case 'cd':
             var str = params[0]
