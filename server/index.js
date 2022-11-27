@@ -1,10 +1,9 @@
 const express = require('express')
 const cors = require("cors")
-const multer = require('multer')
 const fileUpload = require('express-fileupload');
-const path = require("path");
-const route = require('./route')
-const analysis = require('./analysis')
+const sqlRoute = require('./route')
+const sqlAna = require('./analysis')
+const fbRoute = require('./fbRoute')
 const config = require('./config')
 
 const app = express()
@@ -38,7 +37,7 @@ app.post('/put', (req, res) => {
     console.log(req.body.name);
     var err = "Put not success", content  = "Success"
     if(config.srcDB === 'MySQL') {
-      route.Route("put", [0,req.body.numPart], req.body.file, function (result){res.send({content: result, err: err});})
+      sqlRoute.Route("put", [0,req.body.numPart], req.body.file, function (result){res.send({content: result, err: err});})
     }
     else {
 
@@ -50,7 +49,7 @@ app.post('/cmd',  (req, res) => {
     //console.log(cmd, params, filename)
     var content = "1", err = "";
     if(config.srcDB === 'MySQL') {
-      route.Route(cmd, params, filename, function (result){res.send({content: result, err: err});});
+      sqlRoute.Route(cmd, params, filename, function (result){res.send({content: result, err: err});});
     }
     else {
 
@@ -67,12 +66,12 @@ app.post('/query', (req, res) => {
     console.log(req.body.rawQuery);
     var output = '', err = ''
     if(config.srcDB === 'MySQL') {
-      analysis.HandleQuery(req.body.rawQuery,(params)=>{
+      sqlAna.HandleQuery(req.body.rawQuery,(params)=>{
         res.send({output: params[0], err: params[1]});
       })
     }
     else {
-      
+
     }
 });
 
