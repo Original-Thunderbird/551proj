@@ -30,6 +30,17 @@ export default function Explorer() {
     });
   }, []);
 
+  React.useEffect(() => {
+    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+      setExplorerState(prevExplorerState => {
+        return {
+          ...prevExplorerState,
+          eList: res.data.content
+        }
+      })
+    });
+  }, [explorerState.curDir]);
+
   function openMkdirPopup() {
     setCntnrVsblty(prevVsblty => {
       return {
@@ -83,15 +94,6 @@ export default function Explorer() {
           curDir: res.data.content
         }
       })
-    }).then(() => {
-      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            eList: res.data.content
-          }
-        })
-      });
     });
   }
 
@@ -107,15 +109,6 @@ export default function Explorer() {
             curDir: res.data.content
           }
         })
-      }).then(() => {
-        Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-          setExplorerState(prevExplorerState => {
-            return {
-              ...prevExplorerState,
-              eList: res.data.content
-            }
-          })
-        });
       });
     }
   }
