@@ -120,10 +120,12 @@ function App() {
       <input type="radio" id="MySQL" value="MySQL" name="srcDB" checked={srcDB === 'MySQL'} onChange={handleDB}/>
       <label htmlFor="MySQL">MySQL</label>
       <br/><br/>
+      <h2>File System Navigator:</h2>
       <Explorer/>
       <br/><br/>
+      <h2>Search {'&'} Analysis</h2>
       <Query/>
-
+      <br/><br/>
       <label>Current dir:{myOutput.curDir}</label>
       <form onSubmit={handleCmd}>
         <label>cmd:     </label>

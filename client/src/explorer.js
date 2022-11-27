@@ -83,14 +83,15 @@ export default function Explorer() {
           curDir: res.data.content
         }
       })
-    });
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          eList: res.data.content
-        }
-      })
+    }).then(() => {
+      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+        setExplorerState(prevExplorerState => {
+          return {
+            ...prevExplorerState,
+            eList: res.data.content
+          }
+        })
+      });
     });
   }
 
@@ -106,14 +107,15 @@ export default function Explorer() {
             curDir: res.data.content
           }
         })
-      });
-      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            eList: res.data.content
-          }
-        })
+      }).then(() => {
+        Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+          setExplorerState(prevExplorerState => {
+            return {
+              ...prevExplorerState,
+              eList: res.data.content
+            }
+          })
+        });
       });
     }
   }
@@ -142,14 +144,15 @@ export default function Explorer() {
       closeMkdirPopup();
       Axios.post('http://localhost:3001/cmd', {cmd: 'mkdir', params: [event.target.name.value]}).then((res) => {
         console.log(res.data);
-      });
-      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            eList: res.data.content
-          }
-        })
+      }).then(() => {
+        Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+          setExplorerState(prevExplorerState => {
+            return {
+              ...prevExplorerState,
+              eList: res.data.content
+            }
+          })
+        });
       });
     }
   }
@@ -189,14 +192,15 @@ export default function Explorer() {
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'rm', params: [cmdInput.rmTarget]}).then((res) => {
-      });
-      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            eList: res.data.content
-          }
-        })
+      }).then(() => {
+        Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+          setExplorerState(prevExplorerState => {
+            return {
+              ...prevExplorerState,
+              eList: res.data.content
+            }
+          })
+        });
       });
     }
   }                         

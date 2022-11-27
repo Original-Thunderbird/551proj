@@ -147,8 +147,8 @@ export default function Query(props) {
   return (
     <div className="lvl1Section row">
       <div className="column2">
-        <form className="lvl1Section row" onSubmit={submitStudentQuery}>
-          <h3>Student:</h3>
+        <form className="lvl2Section row" onSubmit={submitStudentQuery}>
+          <h4>Student:</h4>
           <div className="column3">
             <label>Name:</label>
             <br/>
@@ -248,8 +248,8 @@ export default function Query(props) {
           </div>
         </form>
         <br/>
-        <form className="lvl1Section row" onSubmit={submitCompanyQuery}>
-          <h3>Company:</h3>
+        <form className="lvl2Section row" onSubmit={submitCompanyQuery}>
+          <h4>Company:</h4>
           <div className="column2">
             <label>Name:&nbsp; &nbsp; </label>
             <input

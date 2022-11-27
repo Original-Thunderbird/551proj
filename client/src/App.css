@@ -16,6 +16,12 @@ body {
   padding: 10px;
 }
 
+.lvl2Section {
+  border: dashed;
+  border-width: 2px;
+  padding: 10px;
+}
+
 .row {
   display: flex;
   flex-direction: row;
