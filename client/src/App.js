@@ -13,17 +13,18 @@ function App() {
   })
 
   const [myInput, setMyInput] = React.useState({
-    cmdStr: '', query:'', srcDB:'MySQL'
+    cmdStr: '', query:''
   })
 
+  const [srcDB, setSrcDB] = React.useState('MySQL')
+
   React.useEffect(() => {
-    Axios.post('http://localhost:3001/db', {db: myInput.srcDB}).then((res) => {
-      console.log(res.data);
+    Axios.post('http://localhost:3001/db', {db: srcDB}).then((res) => {
+      console.log("in db:", res.data);
     });
-  });
+  }, [srcDB]);
 
   function handleChange(event) {
-    // console.log(event.target.name, event.target.value)
     setMyInput(prevInput => {
       return {
         ...prevInput,
@@ -44,7 +45,6 @@ function App() {
           cmdErr: res.data.err
         }
       })
-      //cmdErr = res.data.err;
       if(cmd === 'cd') {
         setMyOutput(prevOutput => {
           return {
@@ -52,7 +52,6 @@ function App() {
             curDir: res.data.content
           }
         })
-        //curDir = res.data.content;
       }
       else {
         setMyOutput(prevOutput => {
@@ -61,7 +60,6 @@ function App() {
             cmdOutput: res.data.content
           }
         })
-        //cmdOutput = res.data.content;
       }
     });
     setMyInput({
@@ -71,7 +69,6 @@ function App() {
 
   function handleQuery(event) {
     event.preventDefault();
-    // console.log('raw q:', myInput.query);
     Axios.post('http://localhost:3001/query', {rawQuery: myInput.query}).then((res) => {
       console.log(res.data);
       setMyOutput(prevOutput => {
@@ -88,12 +85,7 @@ function App() {
   }
 
   function handleDB(event) {
-    setMyInput(prevInput => {
-      return {
-        ...prevInput,
-        [event.target.name]: event.target.value
-      }
-    });
+    setSrcDB(event.target.value);
   }
 
   function parseRawCmd(cmdLine) {
@@ -112,10 +104,24 @@ function App() {
     return [cmd, params, filename]
   }
 
+  function handleSQLTest() {
+    Axios.post('http://localhost:3001/sqltest', {name: "ZhangSan", age: 18, country: "USA"}).then((res) => {
+      console.log(res.data);
+    })
+  }
+
   return (
     <div>
-      <Explorer inputCrtl={handleChange}/>
-      <br/>
+      <label>Current DB:</label>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <input type="radio" id="Firebase" value="Firebase" name="srcDB" checked={srcDB === 'Firebase'} onChange={handleDB}/>
+      <label htmlFor="Firebase">Firebase</label>
+      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <input type="radio" id="MySQL" value="MySQL" name="srcDB" checked={srcDB === 'MySQL'} onChange={handleDB}/>
+      <label htmlFor="MySQL">MySQL</label>
+      <br/><br/>
+      <Explorer/>
+      <br/><br/>
       <Query/>
 
       <label>Current dir:{myOutput.curDir}</label>
@@ -152,56 +158,12 @@ function App() {
         <label>outPut:{myOutput.queryOutput}</label>
       </form>
       <br/>
+      <button onClick={handleSQLTest}>SQLTest</button>
 
-      <label>Current DB:</label>
-      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-      <input type="radio" id="Firebase" value="Firebase" name="srcDB" checked={myInput.srcDB === 'Firebase'} onChange={handleDB}/>
-      <label htmlFor="Firebase">Firebase</label>
-      <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-      <input type="radio" id="MySQL" value="MySQL" name="srcDB" checked={myInput.srcDB === 'MySQL'} onChange={handleDB}/>
-      <label htmlFor="MySQL">MySQL</label>
-      <br/>
+      
+
+      
     </div>
-
-
-    // <div>
-    //   <form  className="form-group" onSubmit={handleSubmit}>
-    //     <label>name:     </label>
-    //     <input 
-    //       type="text"
-    //       placeholder="your name"
-    //       onChange={handleChange}
-    //       name="name"
-    //       value={formData.name}
-    //     />
-    //     <label>age:     </label>
-    //     <input 
-    //       type="text"
-    //       placeholder="your age"
-    //       onChange={handleChange}
-    //       name="age"
-    //       value={formData.age}
-    //     />
-    //     <label>country:     </label>
-    //     <input 
-    //       type="text"
-    //       placeholder="your country"
-    //       onChange={handleChange}
-    //       name="country"
-    //       value={formData.country}
-    //     />
-    //     <button>Submit</button>
-    //   </form>
-    //   {/* <button className="btn btn-primary" onClick={getEmployees}>GetAll</button>
-    //   {empList.map(e => {
-    //     return <div>{e.name},{e.age},{e.country}</div>
-    //   })} */}
-    //   <form className="App" onSubmit={uploadFile}>
-    //     <input type="file" name="file" onChange={saveFile} />
-    //     <button>Upload</button>
-    //   </form>
-    // </div>
-    
   );
 }
 

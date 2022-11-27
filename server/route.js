@@ -1,4 +1,5 @@
 const fsCmd = require("./cmd");
+const config = require("./config");
 
 var curDir = "/"
 var curInumber = 0
@@ -58,17 +59,23 @@ function Route(cmd, params, filename, callback) {
             });
             break;
         case 'ls':
-
-            fsCmd.ls(curInumber,function (result){
+            if(config.srcDB === 'MySQL') {
+              fsCmd.ls(curInumber,function (result){
                 content = result;
                 callback(result);
-            });
+              });
+            }
+            else {
+
+            }
             //console.log(content);
             break;
         case 'cat':
-            fsCmd.cat(getRealPath(params[0]),function (result) {
+            if(config.srcDB === 'MySQL') {
+              fsCmd.cat(getRealPath(params[0]),function (result) {
                 callback(result)
-            });
+              });
+            } 
             break;
         case 'rm':
             fsCmd.rm(getRealPath(params[0]),function (result) {

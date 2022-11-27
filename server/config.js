@@ -25,13 +25,13 @@ const sqlDBB = mySQLApp.createConnection({
   user: 'admin',
   host: 'localhost',
   password: '123456',
-  database: 'playground'
+  database: 'DSCI551'
 })
 
 srcDB = 'MySQL';
 
 exports.sqlDB = sqlDBB
-exports.sqlDB = sqlDB
+//exports.sqlDB = sqlDB
 exports.fbApp = this.fbApp
 exports.srcDB = this.srcDB
 exports.firebaseConfig = firebaseConfig
