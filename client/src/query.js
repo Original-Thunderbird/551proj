@@ -346,7 +346,8 @@ export default function Query(props) {
       </div>
       
       <div className="column2">
-        <label>query result:{output}</label>
+        <label>query result:</label>
+        <div className='textbody'>{output}</div>
       </div>
     </div>
   )

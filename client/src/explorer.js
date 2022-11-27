@@ -7,7 +7,7 @@ export default function Explorer() {
   let fileReader, numPart, fileName;
 
   const [explorerState, setExplorerState] = React.useState({
-      cmdErr: '', curDir: '/', cmdOutput: '', eList: '', fileContent: ''
+      cmdErr: '', curDir: '/', cmdOutput: '', eList: '', fileContent: []
   })
 
   const [cmdInput, setCmdInput] = React.useState({
@@ -40,6 +40,10 @@ export default function Explorer() {
       })
     });
   }, [explorerState.curDir]);
+
+  React.useEffect(() => {
+    
+  });
 
   function openMkdirPopup() {
     setCntnrVsblty(prevVsblty => {
@@ -274,7 +278,8 @@ export default function Explorer() {
           </form>
         </div>
         <div className="column2">
-          <label>File Content:{explorerState.fileContent}</label>
+          <label>File Content:</label>
+          <div className='textbody'>{explorerState.fileContent}</div>
         </div>
       </div>
   )
