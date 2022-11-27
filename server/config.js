@@ -2,14 +2,13 @@ const firebase = require('firebase/app')
 const mySQLApp = require('mysql')
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDslr5vIL3zU9aUf2sYopP-lsmzkAcJrBo",
-    authDomain: "dsci551-85451.firebaseapp.com",
-    databaseURL: "https://dsci551-85451-default-rtdb.firebaseio.com",
-    projectId: "dsci551-85451",
-    storageBucket: "dsci551-85451.appspot.com",
-    messagingSenderId: "413318604891",
-    appId: "1:413318604891:web:fab9aeb0b27f7e020cb77e",
-    measurementId: "G-6P3LJQ53SD"
+  apiKey: "AIzaSyA55URxNCp4V-b_CDNrAAWnxJmjsKJfS6Y",
+  authDomain: "dsci551-project-229fc.firebaseapp.com",
+  databaseURL: "https://dsci551-project-229fc-default-rtdb.firebaseio.com/",
+  projectId: "dsci551-project-229fc",
+  storageBucket: "dsci551-project-229fc.appspot.com",
+  messagingSenderId: "951394219493",
+  appId: "1:951394219493:web:e57e8840ba1c7f50fbeb0c"
 };
 
 // Initialize Firebase
@@ -35,3 +34,4 @@ exports.sqlDB = sqlDBB
 exports.sqlDB = sqlDB
 exports.fbApp = this.fbApp
 exports.srcDB = this.srcDB
+exports.firebaseConfig = firebaseConfig
