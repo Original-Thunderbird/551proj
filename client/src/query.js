@@ -11,8 +11,12 @@ export default function Query(props) {
     name: "", industry: ""
   });
 
+  const [specInput, setSpecInput] = React.useState({
+    min: 0, max: 600
+  });
+
   const [localSpec, setLocalSpec] = React.useState(null);
-  const [localFoI, setLocalFoI] = React.useState(['Name', 'Spec', 'Hired', 'Company', 'Role']);
+  const [localFoI, setLocalFoI] = React.useState(['Name', 'SpecName', 'Hired', 'CompName', 'Role']);
   const [localFtC, setLocalFtC] = React.useState(null);
   const [output, setOutput] = React.useState("");
 
@@ -27,15 +31,19 @@ export default function Query(props) {
     { value: 'Computer Security', label: 'Computer Security' },
     { value: 'Computer Networks', label: 'Computer Networks' },
     { value: 'Scientists and Engineers (37)', label: 'Scientists and Engineers (37)' },
+    { value: '', label: '(None)' }
   ];
 
   const fieldOptions = [
     { value: 'Name', label: 'Name'},
-    { value: 'Spec', label: 'Spec'},
+    { value: 'SpecName', label: 'SpecName'},
     { value: 'Hired', label: 'Hired'},
-    { value: 'Company', label: 'Company'},
-    { value: 'Role', label: 'Role'}
+    { value: 'CompanyName', label: 'CompanyName'},
+    { value: 'Role', label: 'Role'},
+    { value: '', label: '(None)' }
   ];
+
+  let queryEmptyStr = 'no result found'
 
   function handleSpecChange(event) {
     setLocalSpec(event.value);
@@ -74,6 +82,15 @@ export default function Query(props) {
     });
   }
 
+  function handleSpecQueryChange(event) {
+    setSpecInput(prevSpecInput => {
+      return {
+        ...prevSpecInput,
+        [event.target.name]: event.target.value
+      }
+    });
+  }
+
   function submitStudentQuery(event) {
     event.preventDefault();
     let jstr = JSON.stringify(
@@ -87,22 +104,22 @@ export default function Query(props) {
             method: "="
           },
           {
-            name: "Spec",
+            attr: "SpecName",
             value: localSpec,
             method: "="
           },
           {
-            name: "Hired",
+            attr: "Hired",
             value: studentInput.hired,
             method: "="
           },
           {
-            name: "Company",
+            attr: "CompName",
             value: studentInput.company,
             method: "="
           },
           {
-            name: "Role",
+            attr: "Role",
             value: studentInput.role,
             method: "="
           }
@@ -110,10 +127,14 @@ export default function Query(props) {
         groupby: localFtC
       }
     )
-    console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
       console.log(res);
-      //setOutput(res);
+      if(res.data.output.length === 0) {
+        setOutput(queryEmptyStr);
+      }
+      else {
+        setOutput(res.data.output);
+      }
     });
   }
 
@@ -121,11 +142,11 @@ export default function Query(props) {
     event.preventDefault();
     let jstr = JSON.stringify(
       {
-        select: ["Name", "Industry"],
+        select: ["Company", "Industry"],
         from: "COMPANY",
         where: [
           {
-            attr: "Name",
+            attr: "Company",
             value: companyInput.name,
             method: "="
           },
@@ -140,7 +161,44 @@ export default function Query(props) {
     console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
       console.log(res);
-      //setOutput(res);
+      if(res.data.output.length === 0) {
+        setOutput(queryEmptyStr);
+      }
+      else {
+        setOutput(res.data.output);
+      }
+    });
+  }
+
+  function submitSpecQuery(event) {
+    event.preventDefault();
+    let jstr = JSON.stringify(
+      {
+        select: ["Name", "Size"],
+        from: "SPEC",
+        where: [
+          {
+            attr: "Size",
+            value: specInput.min,
+            method: ">="
+          },
+          {
+            attr: "Size",
+            value: specInput.max,
+            method: "<="
+          }
+        ]
+      }
+    );
+    console.log(jstr)
+    Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
+      console.log(res);
+      if(res.data.output.length === 0) {
+        setOutput(queryEmptyStr);
+      }
+      else {
+        setOutput(res.data.output);
+      }
     });
   }
 
@@ -162,7 +220,7 @@ export default function Query(props) {
             <label>Specification:</label>
             <Select
               name='spec'
-              defaultValue={localSpec}
+              defaultValue={specOptions[10]}
               onChange={handleSpecChange}
               options={specOptions}
             />
@@ -239,7 +297,7 @@ export default function Query(props) {
             <br/>
             <Select
               name='ftc'
-              defaultValue={localFtC}
+              defaultValue={fieldOptions[5]}
               onChange={handleFtCChange}
               options={fieldOptions}
             />
@@ -252,6 +310,7 @@ export default function Query(props) {
           <h4>Company:</h4>
           <div className="column2">
             <label>Name:&nbsp; &nbsp; </label>
+            <br/>
             <input
               type="text"
               name="name"
@@ -273,10 +332,41 @@ export default function Query(props) {
             <button className="btn btn-danger center">Submit</button>
           </div>
         </form>
+        <br/>
+        <form className="lvl2Section" onSubmit={submitSpecQuery}>
+          <h4>Specification:</h4>
+          <div className="column2">
+            <label>Size:&nbsp; &nbsp; </label>
+            <br/>
+            <label>min:&nbsp; &nbsp; </label>
+            <input
+              type="number"
+              name="min"
+              onChange={handleSpecQueryChange}
+              value={specInput.min}
+              size="10"
+              min="0"
+            />
+            <label>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </label>
+            <label>max:&nbsp; &nbsp; </label>
+            <input
+              type="number"
+              name="max"
+              onChange={handleSpecQueryChange}
+              value={specInput.max}
+              size="10"
+              max="600"
+            />
+          </div>
+          <label>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </label>
+          <button className="btn btn-danger center">Submit</button>
+
+        </form>
       </div>
       
       <div className="column2">
-        <label>query result:{output}</label>
+        <label>query result:</label>
+        <div className='textbody'>{output}</div>
       </div>
     </div>
   )

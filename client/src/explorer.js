@@ -4,10 +4,10 @@ import Container from './container.js';
 import { MkdirForm, FilePartitionFrom } from './form.js';
 
 export default function Explorer() {
-  let fileReader, numPart;
+  let fileReader, numPart, fileName;
 
   const [explorerState, setExplorerState] = React.useState({
-      cmdErr: '', curDir: '/', cmdOutput: '', eList: '', fileContent: ''
+      cmdErr: '', curDir: '/', cmdOutput: '', eList: '', fileContent: []
   })
 
   const [cmdInput, setCmdInput] = React.useState({
@@ -29,6 +29,21 @@ export default function Explorer() {
       })
     });
   }, []);
+
+  React.useEffect(() => {
+    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+      setExplorerState(prevExplorerState => {
+        return {
+          ...prevExplorerState,
+          eList: res.data.content
+        }
+      })
+    });
+  }, [explorerState.curDir]);
+
+  React.useEffect(() => {
+    
+  });
 
   function openMkdirPopup() {
     setCntnrVsblty(prevVsblty => {
@@ -83,19 +98,11 @@ export default function Explorer() {
           curDir: res.data.content
         }
       })
-    }).then(() => {
-      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            eList: res.data.content
-          }
-        })
-      });
     });
   }
 
-  function cdChild() {
+  function cdChild(event) {
+    event.preventDefault();
     if(cmdInput.cdChildDir === '') {
       alert('target directory cannot be empty');
     }
@@ -107,25 +114,18 @@ export default function Explorer() {
             curDir: res.data.content
           }
         })
-      }).then(() => {
-        Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-          setExplorerState(prevExplorerState => {
-            return {
-              ...prevExplorerState,
-              eList: res.data.content
-            }
-          })
-        });
       });
     }
   }
 
-  function cat() {
+  function cat(event) {
+    event.preventDefault();
     if(cmdInput.catFile === '') {
       alert('file name cannot be empty');
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'cat', params: [cmdInput.catFile]}).then((res) => {
+        console.log(res.data.content)
         setExplorerState(prevExplorerState => {
           return {
             ...prevExplorerState,
@@ -137,6 +137,7 @@ export default function Explorer() {
   }
 
   function mkdir(event) {
+    event.preventDefault();
     if(event.target.name.value === "") {
       alert('please input folder name');
     }
@@ -166,6 +167,9 @@ export default function Explorer() {
     }
     else {
       closePutPopup();
+      console.log(data)
+      fileName = data['file'][0]['name'];
+      console.log(fileName)
       numPart = data['partNum'];
       fileReader = new FileReader();
       fileReader.onloadend = handleFileRead;
@@ -175,7 +179,7 @@ export default function Explorer() {
 
   const handleFileRead = (event) => {
     event.preventDefault(event);
-    Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), numPart: numPart}).then((res) => {});
+    Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), name: fileName, numPart: numPart}).then((res) => {});
     Axios.post('http://localhost:3001/cmd', {cmd: 'ls'}).then((res) => {
       setExplorerState(prevExplorerState => {
         return {
@@ -186,7 +190,8 @@ export default function Explorer() {
     });
   };
 
-  function rm() {
+  function rm(event) {
+    event.preventDefault();
     if(cmdInput.rmTarget === '') {
       alert('file name cannot be empty');
     }
@@ -273,7 +278,8 @@ export default function Explorer() {
           </form>
         </div>
         <div className="column2">
-          <label>File Content:{explorerState.fileContent}</label>
+          <label>File Content:</label>
+          <div className='textbody'>{explorerState.fileContent}</div>
         </div>
       </div>
   )

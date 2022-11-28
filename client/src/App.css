@@ -34,3 +34,7 @@ body {
 .column3 {
   flex: 1;
 }
+
+.textbody {
+  white-space: pre-wrap;
+}

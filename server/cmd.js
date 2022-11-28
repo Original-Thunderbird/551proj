@@ -6,12 +6,13 @@ const {NULL} = require("mysql/lib/protocol/constants/types");
 
 function mkdir(ino, dir, callback) {
     var content = 'whatever', err = ''
-    console.log('mkdir:', dir)
+    console.log('ino:', ino, ' dir:', dir)
     // content: anything you may want to tell the user
     config.sqlDB.query("SELECT * FROM meta WHERE PARENT = "+ino+" AND FILENAME ='"+dir+"'", function(err, result){
-        console.log(result)
+        console.log('result:',result)
         if(err) {
-            throw err
+          console.log(err)
+          throw err
         } else {
             //console.log(result[0].filename)
             if(result.length>0){
@@ -163,22 +164,76 @@ function cat(file,callback) {
     // content: file content
     findIno(file, function (path, ino) {
         var arr = []
-        config.sqlDB.query("SELECT * FROM parts WHERE inumber = "+ino, function (err, res) {
-            for(let i=0;i<res.length;i++){
-                arr.push(res[i].partno)
+
+        config.sqlDB.query("SELECT typ FROM meta WHERE inumber = "+ino,(err,res)=>{
+            if(err){
+                console.log(err)
             }
-            var result = ""
-            for(let i=0;i<arr.length;i++){
-                config.sqlDB.query("SELECT * FROM t"+arr[i], function (err, res) {
-                    for(let j=0;j<res.length;j++){
-                        result = result + res[j].ID +"\t"+res[j].Name+"\t"+res[j].SpecName+"\t"+res[j].Hired+"\t"+res[j].CompName+"\t"+res[j].Role+"\n"
-                        if(i==arr.length-1&&j==res.length-1){
-                            callback(result)
-                        }
+            if(res.length==0){
+                return callback("No results found.")
+            }
+            console.log(res[0])
+            if(res[0].typ=='fs'){
+                config.sqlDB.query("SELECT * FROM parts WHERE inumber = "+ino, function (err, res) {
+                    for(let i=0;i<res.length;i++){
+                        arr.push(res[i].partno)
+                    }
+                    var result = "[\n"
+                    for(let i=0;i<arr.length;i++){
+                        config.sqlDB.query("SELECT * FROM t"+arr[i], function (err, res) {
+                            for(let j=0;j<res.length;j++){
+                                result = result + "    {\n"
+                                result = result + "        \"ID\":\"" +res[j].ID
+                                result = result +"\",\n        \"Name\":\"" +res[j].Name
+                                result = result +"\",\n        \"SpecName\":\"" +res[j].SpecName
+                                result = result +"\",\n        \"Hired\":\"" +(res[j].Hired=="1"?"true":"false")
+                                result = result +"\",\n        \"CompName\":\"" +res[j].CompName
+                                result = result +"\",\n        \"Role\":\"" +res[j].Role+"\"\n"
+
+                                if(i==arr.length-1&&j==res.length-1){
+                                    result = result + "    }\n"
+                                    result = result + "]"
+                                    console.log(result)
+                                    callback(result)
+                                }
+                                else{
+                                    result = result+ "    },\n"
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+            else if(res[0].typ=='fc'){
+                config.sqlDB.query("SELECT * FROM parts WHERE inumber = "+ino, function (err, res) {
+                    for(let i=0;i<res.length;i++){
+                        arr.push(res[i].partno)
+                    }
+                    var result = "[\n"
+                    for(let i=0;i<arr.length;i++){
+                        config.sqlDB.query("SELECT * FROM t"+arr[i], function (err, res) {
+                            for(let j=0;j<res.length;j++){
+                                result = result + "    {\n"
+                                result = result + "        \"Company\":\"" +res[j].Company
+                                result = result +"\",\n        \"Industry\":\"" +res[j].Industry+"\"\n"
+
+                                if(i==arr.length-1&&j==res.length-1){
+                                    result = result + "    }\n"
+                                    result = result + "]"
+                                    console.log(result)
+                                    callback(result)
+                                }
+                                else{
+                                    result = result+ "    },\n"
+                                }
+                            }
+                        })
                     }
                 })
             }
         })
+
+
     })
     return [content, err];
 }
@@ -255,13 +310,13 @@ function rm(file, callback) {
 
 function put(file, dir, numParts, callback) {
     var content = 'whatever', err = ''
-    console.log('put:', file, dir, numParts)
-    var temp = file.split('/')
-    var filename = temp[temp.length-1]
+    //console.log('put:', file, dir, numParts)
+
+    var filename = "no_folder_name_1"
     var type = ''
     try {
-        var data = fs.readFileSync(path.join(__dirname, file), "utf8");
-        var json = JSON.parse(data)
+
+        var json = file
         findIno(dir, function (path, ino) {
             var pnos = new Array(numParts)
             if('ID' in json[0]){
@@ -433,259 +488,7 @@ function readPartition(file, numParts, callback) {
     })
 }
 
-function doQuery(query, callback) {
-    var json = JSON.parse(query)
-    var select = json.select;
-    var from = json.from
-    var where = json.where
-    var groupby = json.groupby
-    if(from.toUpperCase() == "STUDENT"){
-        config.sqlDB.query("select GROUP_CONCAT(p.partno SEPARATOR ',') as pno from meta m join parts p on m.inumber = p.inumber where m.typ = 'fs'", (err, res)=>{
-            var strs = res[0].pno.split(',')
-            var result = []
-            for(let j=0 ;j<strs.length; j++){
-                let partResult = []
-                config.sqlDB.query("select * from t"+strs[j], function (err, res) {
-                    if(err){
-                        console.log(err)
-                    }
-                    for(let i=0;i<res.length;i++){
-                        var flag = true
-                        for(let con of where){
-                            if(flag&&!studentCompare(res[i], con)){
-                                flag = false
-                            }
-                        }
-                        if(flag){
-                            if(groupby!=undefined){
-                                partResult.push(groupByRender(res[i], groupby))
-                            }
-                            else{
-                                partResult.push(render(res[i], select))
-                            }
 
-                        }
-                    }
-                    result.push(partResult)
-                    if(j==strs.length-1){
-
-                        if(groupby!=undefined){
-                            let map = new Map()
-                            for(let p of result){
-                                for(let e of p){
-                                    if(map.has(e)){
-                                        map.set(e,map.get(e)+1)
-                                    }
-                                    else{
-                                        map.set(e, 1)
-                                    }
-                                }
-                            }
-                            var ret = ""
-                            for(let [key,value] of map){
-                                ret = ret + key + "\t" + value + "\n"
-                            }
-                            console.log(ret)
-                            return callback(ret)
-                        }
-                        else{
-                            return callback(result.toString())
-                        }
-
-                    }
-                })
-            }
-
-        })
-    }
-    else if(from.toUpperCase() == "COMPANY"){
-        config.sqlDB.query("select GROUP_CONCAT(p.partno SEPARATOR ',') as pno from meta m join parts p on m.inumber = p.inumber where m.typ = 'fc'", (err, res)=>{
-            var strs = res[0].pno.split(',')
-            var result = []
-            for(let j=0 ;j<strs.length; j++){
-                let partResult = []
-                config.sqlDB.query("select * from t"+strs[j], function (err, res) {
-                    if(err){
-                        console.log(err)
-                    }
-                    for(let i=0;i<res.length;i++){
-                        var flag = true
-                        for(let con of where){
-                            if(flag&&!companyCompare(res[i], con)){
-                                flag = false
-                            }
-                        }
-                        if(flag){
-                            if(groupby!=undefined){
-                                partResult.push(groupByRenderC(res[i], groupby))
-                            }
-                            else{
-                                partResult.push(renderC(res[i], select))
-                            }
-
-                        }
-                    }
-                    result.push(partResult)
-                    if(j==strs.length-1){
-
-                        if(groupby!=undefined){
-                            let map = new Map()
-                            for(let p of result){
-                                for(let e of p){
-                                    if(map.has(e)){
-                                        map.set(e,map.get(e)+1)
-                                    }
-                                    else{
-                                        map.set(e, 1)
-                                    }
-                                }
-                            }
-                            var ret = ""
-                            for(let [key,value] of map){
-                                ret = ret + key + "\t" + value + "\n"
-                            }
-                            console.log(ret)
-                            return callback(ret)
-                        }
-                        else{
-                            return callback(result.toString())
-                        }
-
-                    }
-                })
-            }
-
-        })
-    }
-}
-
-function groupByRender(obj, groupby) {
-    var res = ""
-    switch (groupby) {
-        case "ID":
-            res = obj.ID
-            break;
-        case "Name":
-            res = obj.Name
-            break;
-        case "SpecName":
-            res = obj.SpecName
-            break;
-        case "Hired":
-            res =  obj.Hired
-            break;
-        case "CompName":
-            res = obj.CompName
-            break;
-        case "Role":
-            res = obj.Role
-            break;
-    }
-    return res
-}
-
-function groupByRenderC(obj, groupby) {
-    var res = ""
-    switch (groupby) {
-        case "Company":
-            res = obj.Company
-            break;
-        case "Industry":
-            res = obj.Industry
-            break;
-    }
-    return res
-}
-
-function render(obj, select){
-    var res = ""
-    for(let str of select){
-        switch (str) {
-            case "ID":
-                res = res + obj.ID + "\r\t"
-                break;
-            case "Name":
-                res = res + obj.Name + "\r\t"
-                break;
-            case "SpecName":
-                res = res + obj.SpecName + "\r\t"
-                break;
-            case "Hired":
-                res = res + obj.Hired + "\r\t"
-                break;
-            case "CompName":
-                res = res + obj.CompName + "\r\t"
-                break;
-            case "Role":
-                res = res + obj.Role + "\r\t"
-                break;
-        }
-    }
-    return res
-}
-
-function renderC(obj, select){
-    var res = ""
-    for(let str of select){
-        switch (str) {
-            case "Company":
-                res = res + obj.Company + "\r\t"
-                break;
-            case "Industry":
-                res = res + obj.Industry + "\r\t"
-                break;
-        }
-    }
-    return res
-}
-
-function studentCompare(obj, condition) {
-    switch (condition.attr) {
-        case "ID":
-            return compare(obj.ID, condition.method, condition.value)
-        case "Name":
-            return compare(obj.Name, condition.method, condition.value)
-        case "SpecName":
-            return compare(obj.SpecName, condition.method, condition.value)
-        case "Hired":
-            return compare(obj.Hired, condition.method, condition.value)
-        case "CompName":
-            return compare(obj.CompName, condition.method, condition.value)
-        case "Role":
-            return compare(obj.Role, condition.method, condition.value)
-        default:
-            return undefined
-    }
-}
-
-function companyCompare(obj, condition) {
-    switch (condition.attr) {
-        case "Company":
-            return compare(obj.Company, condition.method, condition.value)
-        case "Industry":
-            return compare(obj.Industry, condition.method, condition.value)
-        default:
-            return undefined
-    }
-}
-
-function compare(v1, condition, v2) {
-    if(condition=='='){
-        return v1 == v2
-    }
-    else if(condition=='<'){
-        return v1 < v2
-    }
-    else if(condition=='>'){
-        return v1 > v2
-    }
-    else if(condition=='>='){
-        return v1 >= v2
-    }
-    else if(condition=='<='){
-        return v1 <= v2
-    }
-}
 
 exports.mkdir = mkdir
 exports.cd = cd
