@@ -231,6 +231,33 @@ function cat(file,callback) {
                     }
                 })
             }
+            else if(res[0].typ == "fp"){
+                config.sqlDB.query("SELECT * FROM parts WHERE inumber = "+ino, function (err, res) {
+                    for(let i=0;i<res.length;i++){
+                        arr.push(res[i].partno)
+                    }
+                    var result = "[\n"
+                    for(let i=0;i<arr.length;i++){
+                        config.sqlDB.query("SELECT * FROM t"+arr[i], function (err, res) {
+                            for(let j=0;j<res.length;j++){
+                                result = result + "    {\n"
+                                result = result + "        \"Name\":\"" +res[j].Name
+                                result = result +"\",\n        \"Size\":\"" +res[j].Size+"\"\n"
+
+                                if(i==arr.length-1&&j==res.length-1){
+                                    result = result + "    }\n"
+                                    result = result + "]"
+                                    console.log(result)
+                                    callback(result)
+                                }
+                                else{
+                                    result = result+ "    },\n"
+                                }
+                            }
+                        })
+                    }
+                })
+            }
         })
 
 
@@ -349,7 +376,7 @@ function put(file, dir, numParts, callback) {
                     })
                 }
             }
-            else{
+            else if('Company' in json[0]){
                 type = "fc"
                 for(let i=0;i<numParts;i++){
                     pnos[i] = Math.floor(Math.random()*10000 + 1)
@@ -381,7 +408,38 @@ function put(file, dir, numParts, callback) {
                     })
                 }
             }
-
+            else if("Name" in json[0]){
+                type = "fp"
+                for(let i=0;i<numParts;i++){
+                    pnos[i] = Math.floor(Math.random()*10000 + 1)
+                    let sq = "CREATE TABLE t"+pnos[i]+"( Name varchar(50), Size INT, pno varchar(10))"
+                    config.sqlDB.query(sq, (err, res)=>{
+                        if(err){
+                            console.log(err);
+                        }
+                        if(i==numParts-1){
+                            for(let j=0;j<json.length;j++){
+                                var index = 0
+                                var table = ""
+                                var hash = 0
+                                for(let k=0;k<json[j].Name.length;k++){
+                                    hash += json[j].Name.charCodeAt(k)
+                                }
+                                index = hash%numParts
+                                table = pnos[index]
+                                console.log(pnos)
+                                let sql = "INSERT INTO t"+table+" VALUES (?,?,?)"
+                                let fill = [json[j].Name, json[j].Size, pnos[index]]
+                                config.sqlDB.query(sql, fill, (err,res)=>{
+                                    if(err){
+                                        console.log(err)
+                                    }
+                                })
+                            }
+                        }
+                    })
+                }
+            }
 
             var now = new Date()
             var sql = "INSERT INTO META VALUES (?,?,?,?,?)"
@@ -478,6 +536,19 @@ function readPartition(file, numParts, callback) {
                         console.log(res.length)
                         for(let i=0;i<res.length;i++){
                             ret = ret + res[i].Company +"\t"+res[i].Industry+"\n"
+                        }
+                        callback(ret)
+                    })
+                })
+            }
+            else if(res[0].typ == 'fp'){
+                config.sqlDB.query("SELECT * FROM parts WHERE inumber = "+ino+" AND tableno = "+numParts, function (err, res) {
+                    if(err) console.log(err)
+                    config.sqlDB.query("SELECT * FROM t"+numParts, function (err, res) {
+                        var ret = ""
+                        console.log(res.length)
+                        for(let i=0;i<res.length;i++){
+                            ret = ret + res[i].Name +"\t"+res[i].Size+"\n"
                         }
                         callback(ret)
                     })
