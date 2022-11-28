@@ -275,7 +275,7 @@ export default function Explorer(props) {
         </div>
         <div className="column2">
           <label>File Content:</label>
-          <div className='textbody'>{explorerState.fileContent}</div>
+          <div className='textbody'>{props.srcDB === 'MySQL' ? explorerState.fileContent : JSON.stringify(explorerState.fileContent)}</div>
         </div>
       </div>
   )

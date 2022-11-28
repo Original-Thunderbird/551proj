@@ -51,19 +51,21 @@ function cd(dir, callback) {
     console.log("cd here")
     setUp((file_location, file_partition) => {
         if (dir == ".."){
+            console.log("in cd ..: curr_dir:", curr_dir)
             if (curr_dir == "/"){
                 callback(curr_dir)
             } else {
                 curr_dir = curr_dir.slice(0, curr_dir.lastIndexOf("/"))
                 //patch_file()
                 curr_dir_url = url + curr_dir + ".json"
+                console.log("in cd ..: final curr_dir:", curr_dir, "final curr_dir_url:", curr_dir_url)
                 callback(curr_dir)
             }
         }
         else {
             new_dir = curr_dir === '/' ? "/" + dir : curr_dir + "/" + dir
             console.log("target child dir is:", new_dir)
-            console.log("in cd: name node to visit:", nameNode + new_dir + ".json")
+            console.log("in cd child: name node to visit:", nameNode + new_dir + ".json")
             axios.get(nameNode + new_dir + ".json").then(response => {
                 console.log(response.data)
                 if (response.data === null){
