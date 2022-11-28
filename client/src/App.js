@@ -16,7 +16,7 @@ function App() {
     cmdStr: '', query:''
   })
 
-  const [srcDB, setSrcDB] = React.useState('MySQL')
+  const [srcDB, setSrcDB] = React.useState('')
 
   React.useEffect(() => {
     Axios.post('http://localhost:3001/db', {db: srcDB}).then((res) => {
@@ -121,7 +121,7 @@ function App() {
       <label htmlFor="MySQL">MySQL</label>
       <br/><br/>
       <h2>File System Navigator:</h2>
-      <Explorer/>
+      <Explorer srcDB={srcDB}/>
       <br/><br/>
       <h2>Search {'&'} Analysis</h2>
       <Query/>

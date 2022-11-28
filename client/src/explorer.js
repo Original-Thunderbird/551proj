@@ -3,7 +3,7 @@ import Axios from 'axios';
 import Container from './container.js';
 import { MkdirForm, FilePartitionFrom } from './form.js';
 
-export default function Explorer() {
+export default function Explorer(props) {
   let fileReader, numPart, fileName;
 
   const [explorerState, setExplorerState] = React.useState({
@@ -19,18 +19,9 @@ export default function Explorer() {
   })
 
   React.useEffect(() => {
-    console.log("init");
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: ['/']}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          eList: res.data.content
-        }
-      })
-    });
-  }, []);
-
-  React.useEffect(() => {
+    console.log("")
+    console.log("curdir:", explorerState.curDir)
+    console.log("curDB:", props.srcDB)
     Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
       setExplorerState(prevExplorerState => {
         return {
@@ -39,11 +30,7 @@ export default function Explorer() {
         }
       })
     });
-  }, [explorerState.curDir]);
-
-  React.useEffect(() => {
-    
-  });
+  }, [explorerState.curDir, props.srcDB]);
 
   function openMkdirPopup() {
     setCntnrVsblty(prevVsblty => {
