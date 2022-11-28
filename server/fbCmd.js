@@ -55,7 +55,7 @@ function cd(dir, callback) {
                 callback(curr_dir)
             } else {
                 curr_dir = curr_dir.slice(0, curr_dir.lastIndexOf("/"))
-                patch_file()
+                //patch_file()
                 curr_dir_url = url + curr_dir + ".json"
                 callback(curr_dir)
             }
@@ -282,7 +282,6 @@ function readPartition(file, numParts, callback) {
 function patch_file() {
     axios.put(location, file_location)
     axios.put(partition, file_partition)
-    axios.put(curr_dir_url, curr_dir)
 }
 
 function doQuery(query, callback) {
