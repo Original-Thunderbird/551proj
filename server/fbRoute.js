@@ -43,6 +43,8 @@ function Route(cmd, params, filename, callback) {
         case 'readPartition':
             fsCmd.readPartition(params[0], params[1], callback);
             break;
+        case 'doQuery':
+            fsCmd.doQuery(params[0], callback)
         default:
             err = 'do not support such command';
             break;

@@ -4,7 +4,6 @@ const config = require("./config")
 const db = require("firebase/database");
 const { update } = require('firebase/database');
 const axios = require('axios');
-const { response } = require('express');
 
 const url = config.firebaseConfig.databaseURL
 nameNode = url + "nameNode/"
@@ -341,12 +340,12 @@ function doQuery(query, callback) {
                 for (group in allResult) {
                     res = res + group + ":" + allResult[group] + "\n"
                 }
-                callback(res)
+                callback([res, null])
             } else {
                 for (const r of partResult) {
                     res = res + r + "\n"
                 }
-                callback(res)
+                callback([res, null])
             }
         })
     })

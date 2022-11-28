@@ -19,9 +19,9 @@ app.post('/sqltest', (req, res) => {
     const country = req.body.country
 
     config.sqlDB.query(
-        'INSERT INTO test (name, age, country) VALUES (?, ?, ?)', 
+        'INSERT INTO test (name, age, country) VALUES (?, ?, ?)',
         [name, age, country], (err, result) => {
-            if(err) {
+            if (err) {
                 console.log(err)
             } else {
                 res.send("Vals inserted")
@@ -35,24 +35,25 @@ app.post('/put', (req, res) => {
     // console.log(req.body);
     // console.log(req.body.numPart);
     console.log(req.body.name);
-    var err = "Put not success", content  = "Success"
-    if(config.srcDB === 'MySQL') {
-      sqlRoute.Route("put", [0,req.body.numPart], req.body.file, function (result){res.send({content: result, err: err});})
+    var err = "Put not success", content = "Success"
+    if (config.srcDB === 'MySQL') {
+        sqlRoute.Route("put", [0, req.body.numPart], req.body.file, function (result) { res.send({ content: result, err: err }); })
     }
     else {
+        fbRoute.Route("put", [0, req.body.numPart], req.body.file, function (result) { res.send({ content: result, err: err }); })
 
     }
 });
 
-app.post('/cmd',  (req, res) => {
+app.post('/cmd', (req, res) => {
     var cmd = req.body.cmd, params = req.body.params, filename = req.body.filename;
     //console.log(cmd, params, filename)
     var content = "1", err = "";
-    if(config.srcDB === 'MySQL') {
-      sqlRoute.Route(cmd, params, filename, function (result){res.send({content: result, err: err});});
+    if (config.srcDB === 'MySQL') {
+        sqlRoute.Route(cmd, params, filename, function (result) { res.send({ content: result, err: err }); });
     }
     else {
-
+        fbRoute.Route(cmd, params, filename, function (result) { res.send({ content: result, err: err }); });
     }
 });
 
@@ -66,13 +67,16 @@ app.post('/query', (req, res) => {
     console.log(req.body.rawQuery);
     var output = '', err = ''
     console.log(config.srcDB)
-    if(config.srcDB === 'MySQL') {
+    if (config.srcDB === 'MySQL') {
         console.log("mysql")
-      sqlAna.HandleQuery(req.body.rawQuery,(params)=>{
-        res.send({output: params[0], err: params[1]});
-      })
+        sqlAna.HandleQuery(req.body.rawQuery, (params) => {
+            res.send({ output: params[0], err: params[1] });
+        })
     }
     else {
+        fbRoute.Route("doQuery", req.body.rawQuery, "null", (params) => {
+            res.send({ output: params[0], err: params[1] })
+        })
 
     }
 });
