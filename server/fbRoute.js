@@ -35,7 +35,7 @@ function Route(cmd, params, filename, callback) {
             });
             break;
         case 'put':
-            fsCmd.put(filename, params[0], params[1], function (result) {
+            fsCmd.put(params[0], filename, params[1], function (result) {
                 callback(result)
             });
             break;

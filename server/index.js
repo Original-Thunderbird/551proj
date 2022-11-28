@@ -40,7 +40,7 @@ app.post('/put', (req, res) => {
         sqlRoute.Route("put", [0, req.body.numPart], req.body.file, function (result) { res.send({ content: result, err: err }); })
     }
     else {
-        fbRoute.Route("put", [0, req.body.numPart], req.body.file, function (result) { res.send({ content: result, err: err }); })
+        fbRoute.Route("put", [req.body.file, req.body.numPart], req.body.name, function (result) { res.send({ content: result, err: err }); })
 
     }
 });

@@ -200,25 +200,17 @@ function rm(path, callback) {
 
 }
 
-function put(file, dir, numParts, callback) {
+function put(file, filename, numParts, callback) {
     setUp((file_location, file_partition) => {
         // Assume file is in *.json, dir starts with /
-        var fileName = file.split(".")[0]
+        fileName = filename.split(".")[0]
         if (fileName in file_location) {
             callback("file already exist, please remove first")
         }
 
-        var parentDir = dir.slice(1, dir.lastIndexOf('/') + 1)
-        axios.get(nameNode + parentDir + "/.json")
-            .then(response => {
-                data = response.data
-                if (data === null) {
-                    callback("parent directory not found")
-                }
-            })
-
-        var data = fs.readFileSync(path.join(__dirname, file), "utf8");
-        var json = JSON.parse(data)
+        dir = curr_dir
+        numParts = parseInt(numParts)
+        var json = file
         var pnos = new Array(numParts)
 
         for (let i = 0; i < numParts; i++) {
@@ -226,6 +218,10 @@ function put(file, dir, numParts, callback) {
         }
 
         //put into name node
+        console.log("11111111" + dir)
+        console.log("22222222"+ json)
+        console.log("333333333"+ filename)
+        console.log(numParts)
         var res = dir.slice(1).split('/')
         var put_dir = nameNode + dir + "/.json"
         var put_key = res.join("_") + "_" + fileName
@@ -236,12 +232,14 @@ function put(file, dir, numParts, callback) {
         //put into data node
         for (let i = 1; i < numParts + 1; i++) {
             put_dir = dataNode + put_key + "/" + fileName + i + "/.json"
+            console.log("put_dir: "+put_dir)
             axios.put(put_dir, pnos[i - 1])
         }
 
         file_location[fileName] = put_key
         file_partition[fileName] = numParts
         patch_file();
+        callback("Success!")
     })
 }
 
