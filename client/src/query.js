@@ -31,6 +31,7 @@ export default function Query(props) {
     { value: 'Computer Security', label: 'Computer Security' },
     { value: 'Computer Networks', label: 'Computer Networks' },
     { value: 'Scientists and Engineers (37)', label: 'Scientists and Engineers (37)' },
+    { value: '', label: '(None)' }
   ];
 
   const fieldOptions = [
@@ -38,8 +39,11 @@ export default function Query(props) {
     { value: 'SpecName', label: 'SpecName'},
     { value: 'Hired', label: 'Hired'},
     { value: 'CompanyName', label: 'CompanyName'},
-    { value: 'Role', label: 'Role'}
+    { value: 'Role', label: 'Role'},
+    { value: '', label: '(None)' }
   ];
+
+  let queryEmptyStr = 'no result found'
 
   function handleSpecChange(event) {
     setLocalSpec(event.value);
@@ -125,7 +129,12 @@ export default function Query(props) {
     )
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
       console.log(res);
-      setOutput(res.data.output);
+      if(res.data.output.length === 0) {
+        setOutput(queryEmptyStr);
+      }
+      else {
+        setOutput(res.data.output);
+      }
     });
   }
 
@@ -152,7 +161,12 @@ export default function Query(props) {
     console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
       console.log(res);
-      setOutput(res.data.output);
+      if(res.data.output.length === 0) {
+        setOutput(queryEmptyStr);
+      }
+      else {
+        setOutput(res.data.output);
+      }
     });
   }
 
@@ -179,7 +193,12 @@ export default function Query(props) {
     console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
       console.log(res);
-      setOutput(res.data.output);
+      if(res.data.output.length === 0) {
+        setOutput(queryEmptyStr);
+      }
+      else {
+        setOutput(res.data.output);
+      }
     });
   }
 
@@ -201,7 +220,7 @@ export default function Query(props) {
             <label>Specification:</label>
             <Select
               name='spec'
-              defaultValue={localSpec}
+              defaultValue={specOptions[10]}
               onChange={handleSpecChange}
               options={specOptions}
             />
@@ -278,7 +297,7 @@ export default function Query(props) {
             <br/>
             <Select
               name='ftc'
-              defaultValue={localFtC}
+              defaultValue={fieldOptions[5]}
               onChange={handleFtCChange}
               options={fieldOptions}
             />
