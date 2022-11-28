@@ -44,7 +44,7 @@ export default function Explorer(props) {
         }
       });
     }
-  }, [explorerState.curDir, props.srcDB]);
+  }, [explorerState.curDir, props.srcDBFlip]);
 
   function openMkdirPopup() {
     setCntnrVsblty(prevVsblty => {

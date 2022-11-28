@@ -18,6 +18,8 @@ function App() {
 
   const [srcDB, setSrcDB] = React.useState('')
 
+  const [srcDBFlip, setSrcDBFlip] = React.useState(false)
+
   const [firstMount, setFirstMount] = React.useState(1);
 
   React.useEffect(() => {
@@ -29,6 +31,7 @@ function App() {
       Axios.post('http://localhost:3001/db', {db: srcDB}).then((res) => {
         count++;
         console.log("in db:", res.data, " App count:", count);
+        setSrcDBFlip(!srcDBFlip)
       });
     }
   }, [srcDB]);
@@ -130,7 +133,7 @@ function App() {
       <label htmlFor="MySQL">MySQL</label>
       <br/><br/>
       <h2>File System Navigator:</h2>
-      <Explorer srcDB={srcDB}/>
+      <Explorer srcDB={srcDB} srcDBFlip={srcDBFlip}/>
       <br/><br/>
       <h2>Search {'&'} Analysis</h2>
       <Query/>
