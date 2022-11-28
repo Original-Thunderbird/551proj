@@ -17,7 +17,7 @@ function HandleQuery(query, callback) {
     var from = json.from
     var where = json.where
     var groupby = json.groupby
-    console.log("run")
+
     if(from.toUpperCase() == "STUDENT"){
         config.sqlDB.query("select GROUP_CONCAT(p.partno SEPARATOR ',') as pno from meta m join parts p on m.inumber = p.inumber where m.typ = 'fs'", (err, res)=>{
             var strs = res[0].pno.split(',')
@@ -140,6 +140,40 @@ function HandleQuery(query, callback) {
 
         })
     }
+    else if(from.toUpperCase() == "SPEC"){
+
+        config.sqlDB.query("select GROUP_CONCAT(p.partno SEPARATOR ',') as pno from meta m join parts p on m.inumber = p.inumber where m.typ = 'fp'", (err, res)=>{
+            var strs = res[0].pno.split(',')
+            var result = ''
+            for(let j=0 ;j<strs.length; j++){
+                let partResult = ''
+                config.sqlDB.query("select * from t"+strs[j], function (err, res) {
+                    if(err){
+                        console.log(err)
+                    }
+                    //console.log(res)
+                    for(let i=0;i<res.length;i++){
+                        var flag = true
+                        for(let con of where){
+                            if(flag&&!specCompare(res[i], con)){
+                                flag = false
+                            }
+                        }
+                        if(flag){
+                            partResult+=renderP(res[i], select)
+                        }
+                    }
+                    if(partResult.length!=0)
+                        result+=partResult
+                    if(j==strs.length-1){
+                            console.log(result)
+                            return callback([result,''])
+                    }
+                })
+            }
+
+        })
+    }
 }
 
 function groupByRender(obj, groupby) {
@@ -224,6 +258,22 @@ function renderC(obj, select){
     return res
 }
 
+function renderP(obj, select){
+    var res = ""
+    for(let str of select){
+        switch (str) {
+            case "Name":
+                res = res + obj.Name + "\t"
+                break;
+            case "Size":
+                res = res + obj.Size + "\t"
+                break;
+        }
+    }
+    res = res + "\n"
+    return res
+}
+
 function studentCompare(obj, condition) {
     switch (condition.attr) {
         case "ID":
@@ -254,7 +304,19 @@ function companyCompare(obj, condition) {
     }
 }
 
+function specCompare(obj, condition) {
+    switch (condition.attr) {
+        case "Name":
+            return compare(obj.Name, condition.method, condition.value)
+        case "Size":
+            return compare(obj.Size, condition.method, condition.value)
+        default:
+            return undefined
+    }
+}
+
 function compare(v1, condition, v2) {
+
     if(v2==''||v2==null){
         return true
     }
