@@ -2,6 +2,7 @@ const fsCmd = require("./fbCmd");
 
 function Route(cmd, params, filename, callback) {
     var err, content='', curDir='/';
+    console.log("cmd:", cmd, params)
     switch(cmd) {
         case 'mkdir':
             fsCmd.mkdir(params[0],function (result) {
@@ -10,11 +11,14 @@ function Route(cmd, params, filename, callback) {
             });
             break;
         case 'cd':
+            console.log("cd out")
             fsCmd.cd(params[0],function (result) {
                 content = result;
                 callback(result);
             })
+            break;
         case 'ls':
+            console.log("ls out")
             fsCmd.ls(params[0], function (result){
                 content = result;
                 callback(result);
@@ -45,6 +49,7 @@ function Route(cmd, params, filename, callback) {
             break;
         case 'doQuery':
             fsCmd.doQuery(params[0], callback)
+            break;
         default:
             err = 'do not support such command';
             break;

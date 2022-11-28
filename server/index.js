@@ -47,13 +47,14 @@ app.post('/put', (req, res) => {
 
 app.post('/cmd', (req, res) => {
     var cmd = req.body.cmd, params = req.body.params, filename = req.body.filename;
-    //console.log(cmd, params, filename)
+    console.log("command:", cmd, params, filename)
     var content = "1", err = "";
     if (config.srcDB === 'MySQL') {
-        sqlRoute.Route(cmd, params, filename, function (result) { res.send({ content: result, err: err }); });
+      ""
+        sqlRoute.Route(cmd, params, filename, function (result) { console.log("send in MySQL");  res.send({ content: result, err: err }); });
     }
     else {
-        fbRoute.Route(cmd, params, filename, function (result) { console.log("send data"); res.send({ content: result, err: err }); });
+        fbRoute.Route(cmd, params, filename, function (result) { console.log("send in Firebase"); res.send({ content: result, err: err }); });
     }
 });
 
