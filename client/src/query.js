@@ -128,7 +128,7 @@ export default function Query(props) {
       }
     )
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
-      if(res.data.err !== '') {
+      if(res.data.err !== null && res.data.err !== '') {
         alert(res.data.err);
       }
       else {
@@ -164,7 +164,7 @@ export default function Query(props) {
     );
     console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
-      if(res.data.err !== '') {
+      if(res.data.err !== null && res.data.err !== '') {
         alert(res.data.err);
       }
       else {
@@ -200,7 +200,7 @@ export default function Query(props) {
     );
     console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
-      if(res.data.err !== '') {
+      if(res.data.err !== null && res.data.err !== '') {
         alert(res.data.err);
       }
       else {

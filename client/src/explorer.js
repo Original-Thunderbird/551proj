@@ -31,7 +31,7 @@ export default function Explorer(props) {
       console.log("curDB:", props.srcDB)
       console.log("Explorer count:", count)
       Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-        if(res.data.err !== '') {
+        if(res.data.err !== null && res.data.err !== '') {
           alert(res.data.err)
         }
         else {
@@ -102,7 +102,7 @@ export default function Explorer(props) {
 
   function cdParent() {
     Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: ['..']}).then((res) => {
-      if(res.data.err !== '') {
+      if(res.data.err !== null && res.data.err !== '') {
         alert(res.data.err);
       }
       else {
@@ -123,7 +123,7 @@ export default function Explorer(props) {
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: [cmdInput.cdChildDir]}).then((res) => {
-        if(res.data.err !== '') {
+        if(res.data.err !== null && res.data.err !== '') {
           alert(res.data.err);
         }
         else {
@@ -146,7 +146,7 @@ export default function Explorer(props) {
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'cat', params: [cmdInput.catFile]}).then((res) => {
-        if(res.data.err !== '') {
+        if(res.data.err !== null && res.data.err !== '') {
           alert(res.data.err);
         }
         else {
@@ -171,12 +171,12 @@ export default function Explorer(props) {
     else {
       closeMkdirPopup();
       Axios.post('http://localhost:3001/cmd', {cmd: 'mkdir', params: [event.target.name.value]}).then((res) => {
-        if(res.data.err !== '') {
+        if(res.data.err !== null && res.data.err !== '') {
           alert(res.data.err);
         }
       }).then(() => {
         Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-          if(res.data.err !== '') {
+          if(res.data.err !== null && res.data.err !== '') {
             alert(res.data.err);
           }
           else {
@@ -214,12 +214,12 @@ export default function Explorer(props) {
   const handleFileRead = (event) => {
     event.preventDefault(event);
     Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), name: fileName, numPart: numPart}).then((res) => {
-      if(res.data.err !== '') {
+      if(res.data.err !== null && res.data.err !== '') {
         alert(res.data.err);
       }
     }).then(() => {
       Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-        if(res.data.err !== '') {
+        if(res.data.err !== null && res.data.err !== '') {
           alert(res.data.err);
         }
         else {
@@ -241,12 +241,12 @@ export default function Explorer(props) {
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'rm', params: [cmdInput.rmTarget]}).then((res) => {
-        if(res.data.err !== '') {
+        if(res.data.err !== null && res.data.err !== '') {
           alert(res.data.err);
         }
       }).then(() => {
         Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-          if(res.data.err !== '') {
+          if(res.data.err !== null && res.data.err !== '') {
             alert(res.data.err);
           }
           else {
