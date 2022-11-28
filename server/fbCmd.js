@@ -26,6 +26,7 @@ function setUp(callback) {
         curr_dir = curr_dir.substring(0, curr_dir.length-5)
         console.log("curr dir step 2:", curr_dir)
         curr_dir = curr_dir === '' ? '/' : curr_dir 
+        console.log("curr dir step 3:", curr_dir)
 
         axios.get(location)
         .then(response => {
@@ -48,14 +49,16 @@ function setUp(callback) {
 }
 
 function cd(dir, callback) {
-    console.log("cd here")
     setUp((file_location, file_partition) => {
         if (dir == ".."){
             console.log("in cd ..: curr_dir:", curr_dir)
             if (curr_dir == "/"){
                 callback(curr_dir)
             } else {
+                console.log("in cd: curr_dir before split:", curr_dir)
                 curr_dir = curr_dir.slice(0, curr_dir.lastIndexOf("/"))
+                curr_dir = (curr_dir === '' ? '/' : curr_dir);
+                console.log("in cd: curr_dir after split:", curr_dir)
                 //patch_file()
                 curr_dir_url = url + curr_dir + ".json"
                 console.log("in cd ..: final curr_dir:", curr_dir, "final curr_dir_url:", curr_dir_url)
@@ -111,7 +114,7 @@ function mkdir(dir, callback) {
 }
 
 function ls(file, callback) {
-    console.log("ls here")
+    //console.log("ls here")
     setUp((file_location, file_partition) => {
         // Assume file starts with "/"
         directory = file === '/' ? nameNode + '.json' : nameNode + file + ".json"

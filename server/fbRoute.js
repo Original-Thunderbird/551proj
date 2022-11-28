@@ -11,14 +11,12 @@ function Route(cmd, params, filename, callback) {
             });
             break;
         case 'cd':
-            console.log("cd out")
             fsCmd.cd(params[0],function (result) {
                 content = result;
                 callback(result);
             })
             break;
         case 'ls':
-            console.log("ls out")
             fsCmd.ls(params[0], function (result){
                 content = result;
                 callback(result);
