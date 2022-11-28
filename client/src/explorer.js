@@ -4,7 +4,7 @@ import Container from './container.js';
 import { MkdirForm, FilePartitionFrom } from './form.js';
 
 export default function Explorer(props) {
-  let fileReader, numPart, fileName;
+  let fileReader, numPart, fileName, count=0;
 
   const [explorerState, setExplorerState] = React.useState({
       cmdErr: '', curDir: '/', cmdOutput: '', eList: '', fileContent: []
@@ -18,18 +18,27 @@ export default function Explorer(props) {
     mkdirVsblty: false, putVsblty: false
   })
 
+  const [firstMount, setFirstMount] = React.useState(1);
+
   React.useEffect(() => {
-    console.log("")
-    console.log("curdir:", explorerState.curDir)
-    console.log("curDB:", props.srcDB)
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          eList: res.data.content
-        }
-      })
-    });
+    if(firstMount > 0) {
+      //console.log("Explorer firstMount:", firstMount)
+      setFirstMount(firstMount-1);
+    }
+    else {
+      count++;
+      console.log("curdir:", explorerState.curDir)
+      console.log("curDB:", props.srcDB)
+      console.log("Explorer count:", count)
+      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+        setExplorerState(prevExplorerState => {
+          return {
+            ...prevExplorerState,
+            eList: res.data.content
+          }
+        })
+      });
+    }
   }, [explorerState.curDir, props.srcDB]);
 
   function openMkdirPopup() {

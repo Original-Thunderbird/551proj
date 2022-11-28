@@ -6,7 +6,7 @@ import './App.css';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
-  var cmd = '', params = [], filename = ''
+  var cmd = '', params = [], filename = '', count=0
 
   const [myOutput, setMyOutput] = React.useState({
     cmdErr: '', queryErr: '', curDir: '/', cmdOutput: '', queryOutput: ''
@@ -18,10 +18,19 @@ function App() {
 
   const [srcDB, setSrcDB] = React.useState('')
 
+  const [firstMount, setFirstMount] = React.useState(1);
+
   React.useEffect(() => {
-    Axios.post('http://localhost:3001/db', {db: srcDB}).then((res) => {
-      console.log("in db:", res.data);
-    });
+    if(firstMount > 0) {
+      //console.log("App firstMount:", firstMount)
+      setFirstMount(firstMount-1);
+    }
+    else {
+      Axios.post('http://localhost:3001/db', {db: srcDB}).then((res) => {
+        count++;
+        console.log("in db:", res.data, " App count:", count);
+      });
+    }
   }, [srcDB]);
 
   function handleChange(event) {
