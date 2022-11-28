@@ -186,14 +186,15 @@ export default function Explorer(props) {
 
   const handleFileRead = (event) => {
     event.preventDefault(event);
-    Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), name: fileName, numPart: numPart}).then((res) => {});
-    Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          eList: res.data.content
-        }
-      })
+    Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), name: fileName, numPart: numPart}).then((res) => {}).then(() => {
+      Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
+        setExplorerState(prevExplorerState => {
+          return {
+            ...prevExplorerState,
+            eList: res.data.content
+          }
+        })
+      });
     });
   };
 

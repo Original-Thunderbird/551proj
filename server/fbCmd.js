@@ -33,11 +33,14 @@ function setUp(callback) {
             data = response.data
             if (data != null && Object.keys(data).length != 0) {
                 file_location = data
+                console.log("location:", file_location, "partition:", partition)
                 axios.get(partition).then(response => {
                     file_partition = response.data
+                    console.log("callback 1");
                     callback(file_location, file_partition)
                 })
             } else {
+              console.log("callback 2");
                 callback(file_location, file_partition)
             }
 
@@ -210,41 +213,43 @@ function put(file, filename, numParts, callback) {
         // Assume file is in *.json, dir starts with /
         fileName = filename.split(".")[0]
         if (fileName in file_location) {
+            console.log("file already exist, please remove first")
             callback("file already exist, please remove first")
         }
+        else {
+          dir = curr_dir
+          numParts = parseInt(numParts)
+          var json = file
+          var pnos = new Array(numParts)
 
-        dir = curr_dir
-        numParts = parseInt(numParts)
-        var json = file
-        var pnos = new Array(numParts)
+          for (let i = 0; i < numParts; i++) {
+              pnos[i] = json.slice(Math.floor(json.length * i / numParts), Math.floor(json.length * (i + 1) / numParts));
+          }
 
-        for (let i = 0; i < numParts; i++) {
-            pnos[i] = json.slice(Math.floor(json.length * i / numParts), Math.floor(json.length * (i + 1) / numParts));
+          //put into name node
+          console.log("11111111" + dir)
+          console.log("22222222"+ JSON.stringify(json))
+          console.log("333333333"+ filename)
+          console.log(numParts)
+          var res = dir.slice(1).split('/')
+          var put_dir = nameNode + dir + "/.json"
+          var put_key = res.join("_") + "_" + fileName
+          var put_val = {}
+          put_val[fileName] = put_key
+          axios.patch(put_dir, put_val)
+
+          //put into data node
+          for (let i = 1; i < numParts + 1; i++) {
+              put_dir = dataNode + put_key + "/" + fileName + i + "/.json"
+              console.log("put_dir: "+put_dir)
+              axios.put(put_dir, pnos[i - 1])
+          }
+
+          file_location[fileName] = put_key
+          file_partition[fileName] = numParts
+          patch_file();
+          callback("Success!")
         }
-
-        //put into name node
-        console.log("11111111" + dir)
-        console.log("22222222"+ json)
-        console.log("333333333"+ filename)
-        console.log(numParts)
-        var res = dir.slice(1).split('/')
-        var put_dir = nameNode + dir + "/.json"
-        var put_key = res.join("_") + "_" + fileName
-        var put_val = {}
-        put_val[fileName] = put_key
-        axios.patch(put_dir, put_val)
-
-        //put into data node
-        for (let i = 1; i < numParts + 1; i++) {
-            put_dir = dataNode + put_key + "/" + fileName + i + "/.json"
-            console.log("put_dir: "+put_dir)
-            axios.put(put_dir, pnos[i - 1])
-        }
-
-        file_location[fileName] = put_key
-        file_partition[fileName] = numParts
-        patch_file();
-        callback("Success!")
     })
 }
 
