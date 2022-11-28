@@ -6,9 +6,10 @@ const { update } = require('firebase/database');
 const axios = require('axios');
 
 const url = config.firebaseConfig.databaseURL
-nameNode = url + "nameNode/"
+curr_dir = "/"
+nameNode = url + "nameNode"
 dataNode = url + "dataNode/"
-curr_dir_url = url + "curr_dir/.json"
+curr_dir_url = url + curr_dir + ".json"
 location = nameNode + "/file_location/.json"
 partition = nameNode + "/file_partition/.json"
 file_location = {}
@@ -32,10 +33,10 @@ function setUp(callback) {
                 file_location = data
                 axios.get(partition).then(response => {
                     file_partition = response.data
-                    callback(file_location, file_partition, curr_dir)
+                    callback(file_location, file_partition)
                 })
             } else {
-                callback(file_location, file_partition, curr_dir)
+                callback(file_location, file_partition)
             }
 
         })
@@ -46,25 +47,32 @@ function setUp(callback) {
 }
 
 function cd(dir, callback) {
-    setUp((file_location, file_partition, curr_dir) => {
+    setUp((file_location, file_partition) => {
         if (dir == ".."){
-            if (curr_dir == "root"){
-                callback("No parent directory for root")
+            if (curr_dir == "/"){
+                callback(curr_dir)
             } else {
                 curr_dir = curr_dir.slice(0, curr_dir.lastIndexOf("/"))
                 patch_file()
-                callback("Success")
+                curr_dir_url = url + curr_dir + ".json"
+                callback(curr_dir)
             }
         }
         else {
-            new_dir = curr_dir + "/" + dir
-            axios.get(nameNode + new_dir + "/.json").then(response => {
+            new_dir = curr_dir === '/' ? "/" + dir : curr_dir + "/" + dir
+            console.log("target child dir is:", new_dir)
+            console.log("name node to visit:", nameNode + new_dir + ".json")
+            axios.get(nameNode + new_dir + ".json").then(response => {
+                console.log(response.data)
                 if (response.data === null){
+                    console.log("triggered")
                     callback("directory not found")
                 } else {
                     curr_dir = new_dir
-                    patch_file()
-                    callback("Success")
+                    curr_dir_url = url + curr_dir + ".json"
+                    console.log("curr_dir after cd:", curr_dir)
+                    //patch_file()
+                    callback(curr_dir)
                 }
             })
 
@@ -107,7 +115,7 @@ function ls(file, callback) {
             .then(response => {
                 data = response.data
                 if (data === null) {
-                    callback("directory not found")
+                    callback("in ls:directory not found")
                 } else {
                     for (key in data) {
                         if (key !== "default") {

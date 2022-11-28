@@ -53,7 +53,7 @@ app.post('/cmd', (req, res) => {
         sqlRoute.Route(cmd, params, filename, function (result) { res.send({ content: result, err: err }); });
     }
     else {
-        fbRoute.Route(cmd, params, filename, function (result) { res.send({ content: result, err: err }); });
+        fbRoute.Route(cmd, params, filename, function (result) { console.log("send data"); res.send({ content: result, err: err }); });
     }
 });
 

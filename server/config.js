@@ -28,7 +28,7 @@ const sqlDBB = mySQLApp.createConnection({
   database: 'DSCI551'
 })
 
-srcDB = 'MySQL';
+srcDB = '';
 
 //exports.sqlDB = sqlDBB
 exports.sqlDB = sqlDB
