@@ -86,6 +86,15 @@ export default function Explorer(props) {
     })
   }
 
+  function closeFile() {
+    setExplorerState(prevExplorerState => {
+      return {
+        ...prevExplorerState,
+        fileContent: []
+      }
+    });
+  }
+
   function cdParent() {
     Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: ['..']}).then((res) => {
       setExplorerState(prevExplorerState => {
@@ -109,7 +118,8 @@ export default function Explorer(props) {
             ...prevExplorerState,
             curDir: res.data.content
           }
-        })
+        });
+        setCmdInput({cdChildDir: '', catFile:'', rmTarget:''});
       });
     }
   }
@@ -121,13 +131,14 @@ export default function Explorer(props) {
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'cat', params: [cmdInput.catFile]}).then((res) => {
-        console.log(res.data.content)
+        //console.log(res.data.content)
         setExplorerState(prevExplorerState => {
           return {
             ...prevExplorerState,
             fileContent: res.data.content
           }
-        })
+        });
+        setCmdInput({cdChildDir: '', catFile:'', rmTarget:''});
       });
     }
   }
@@ -200,7 +211,8 @@ export default function Explorer(props) {
               ...prevExplorerState,
               eList: res.data.content
             }
-          })
+          });
+          setCmdInput({cdChildDir: '', catFile:'', rmTarget:''});
         });
       });
     }
@@ -274,8 +286,10 @@ export default function Explorer(props) {
           </form>
         </div>
         <div className="column2">
+          <button className="btn btn-danger center" onClick={closeFile}>Close File</button>
+          <span>&nbsp; &nbsp; &nbsp;</span>
           <label>File Content:</label>
-          <div className='textbody'>{props.srcDB === 'MySQL' ? explorerState.fileContent : JSON.stringify(explorerState.fileContent)}</div>
+          <div className='textbody'>{props.srcDB === 'MySQL' ? explorerState.fileContent : (explorerState.fileContent.length === 0 ? '' : JSON.stringify(explorerState.fileContent))}</div>
         </div>
       </div>
   )
