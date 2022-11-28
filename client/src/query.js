@@ -37,7 +37,7 @@ export default function Query(props) {
     { value: 'Name', label: 'Name'},
     { value: 'SpecName', label: 'SpecName'},
     { value: 'Hired', label: 'Hired'},
-    { value: 'CompanyName', label: 'CompanyName'},
+    { value: 'CompName', label: 'CompanyName'},
     { value: 'Role', label: 'Role'}
   ];
 

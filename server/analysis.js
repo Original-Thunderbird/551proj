@@ -17,10 +17,11 @@ function HandleQuery(query, callback) {
     var from = json.from
     var where = json.where
     var groupby = json.groupby
+    console.log("run")
     if(from.toUpperCase() == "STUDENT"){
         config.sqlDB.query("select GROUP_CONCAT(p.partno SEPARATOR ',') as pno from meta m join parts p on m.inumber = p.inumber where m.typ = 'fs'", (err, res)=>{
             var strs = res[0].pno.split(',')
-            var result = []
+            var result =[]
             for(let j=0 ;j<strs.length; j++){
                 let partResult = []
                 config.sqlDB.query("select * from t"+strs[j], function (err, res) {
@@ -44,7 +45,8 @@ function HandleQuery(query, callback) {
 
                         }
                     }
-                    result.push(partResult)
+                    if(partResult.length!=0)
+                        result.push(partResult)
                     if(j==strs.length-1){
 
                         if(groupby!=undefined){
@@ -67,7 +69,8 @@ function HandleQuery(query, callback) {
                             return callback([ret,''])
                         }
                         else{
-                            return callback([result.toString(),''])
+                            console.log(result)
+                            return callback([result,''])
                         }
 
                     }
@@ -103,7 +106,8 @@ function HandleQuery(query, callback) {
 
                         }
                     }
-                    result+=partResult
+                    if(partResult.length!=0)
+                        result+=partResult
                     if(j==strs.length-1){
 
                         if(groupby!=undefined){
@@ -120,13 +124,14 @@ function HandleQuery(query, callback) {
                             }
                             var ret = ""
                             for(let [key,value] of map){
-                                ret = ret + key + "\t" + value + "\n"
+                                ret = ret + key + "\t\t" + value + "\n"
                             }
                             console.log(ret)
                             return callback([ret,''])
                         }
                         else{
-                            return callback([result.toString(),''])
+                            console.log(result)
+                            return callback([result,''])
                         }
 
                     }
@@ -150,7 +155,7 @@ function groupByRender(obj, groupby) {
             res = obj.SpecName
             break;
         case "Hired":
-            res =  obj.Hired
+            res =  (obj.Hired=="1"||obj.Hired==1)?"Hired":"Not Hired"
             break;
         case "CompName":
             res = obj.CompName
@@ -180,25 +185,26 @@ function render(obj, select){
     for(let str of select){
         switch (str) {
             case "ID":
-                res = res + obj.ID + "\r\t"
+                res = res + obj.ID + "\t"
                 break;
             case "Name":
-                res = res + obj.Name + "\r\t"
+                res = res + obj.Name + "\t"
                 break;
             case "SpecName":
-                res = res + obj.SpecName + "\r\t"
+                res = res + obj.SpecName + "\t"
                 break;
             case "Hired":
-                res = res + obj.Hired + "\r\t"
+                res = res + ((obj.Hired=="1"||obj.Hired==1)?"Hired":"Not Hired") + "\t"
                 break;
             case "CompName":
-                res = res + obj.CompName + "\r\t"
+                res = res + obj.CompName + "\t"
                 break;
             case "Role":
-                res = res + obj.Role + "\r\t"
+                res = res + obj.Role + "\t"
                 break;
         }
     }
+    res = res + "\n"
     return res
 }
 
@@ -207,13 +213,14 @@ function renderC(obj, select){
     for(let str of select){
         switch (str) {
             case "Company":
-                res = res + obj.Company + "\r\t"
+                res = res + obj.Company + "\t"
                 break;
             case "Industry":
-                res = res + obj.Industry + "\r\t"
+                res = res + obj.Industry + "\t"
                 break;
         }
     }
+    res = res + "\n"
     return res
 }
 
@@ -248,6 +255,9 @@ function companyCompare(obj, condition) {
 }
 
 function compare(v1, condition, v2) {
+    if(v2==''||v2==null){
+        return true
+    }
     if(condition=='='){
         return v1 == v2
     }
