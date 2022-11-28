@@ -6,8 +6,8 @@ const { update } = require('firebase/database');
 const axios = require('axios');
 
 const url = config.firebaseConfig.databaseURL
-curr_dir = "/"
-nameNode = url + "nameNode"
+curr_dir = ""
+nameNode = url + "nameNode/"
 dataNode = url + "dataNode/"
 curr_dir_url = url + curr_dir + ".json"
 location = nameNode + "/file_location/.json"
@@ -25,6 +25,7 @@ function setUp(callback) {
         console.log('curr dir step 1:', curr_dir)
         curr_dir = curr_dir.substring(0, curr_dir.length-5)
         console.log("curr dir step 2:", curr_dir)
+        curr_dir = curr_dir === '' ? '/' : curr_dir 
 
         axios.get(location)
         .then(response => {
@@ -47,6 +48,7 @@ function setUp(callback) {
 }
 
 function cd(dir, callback) {
+    console.log("cd here")
     setUp((file_location, file_partition) => {
         if (dir == ".."){
             if (curr_dir == "/"){
@@ -61,7 +63,7 @@ function cd(dir, callback) {
         else {
             new_dir = curr_dir === '/' ? "/" + dir : curr_dir + "/" + dir
             console.log("target child dir is:", new_dir)
-            console.log("name node to visit:", nameNode + new_dir + ".json")
+            console.log("in cd: name node to visit:", nameNode + new_dir + ".json")
             axios.get(nameNode + new_dir + ".json").then(response => {
                 console.log(response.data)
                 if (response.data === null){
@@ -107,15 +109,17 @@ function mkdir(dir, callback) {
 }
 
 function ls(file, callback) {
+    console.log("ls here")
     setUp((file_location, file_partition) => {
         // Assume file starts with "/"
-        directory = nameNode + file + "/.json"
+        directory = file === '/' ? nameNode + '.json' : nameNode + file + ".json"
+        console.log("in ls: name node to visit:", directory)
         ans = ""
         axios.get(directory)
             .then(response => {
                 data = response.data
                 if (data === null) {
-                    callback("in ls:directory not found")
+                    callback("in ls: directory not found")
                 } else {
                     for (key in data) {
                         if (key !== "default") {
@@ -131,8 +135,6 @@ function ls(file, callback) {
 function cat(path, callback) {
 
     setUp((file_location, file_partition) => {
-
-
 
         // Assums path starts with /
         console.log('cat:', path)
