@@ -366,7 +366,7 @@ export default function Query(props) {
       
       <div className="column2">
         <label>query result:</label>
-        <div className='textbody'>{output}</div>
+        <div className='textbody'>{props.srcDB === 'MySQL' ? output : (output.length === 0 ? '' : JSON.stringify(output))}</div>
       </div>
     </div>
   )
