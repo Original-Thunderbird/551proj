@@ -4,10 +4,12 @@ const config = require("./config")
 const db = require("firebase/database");
 const { update } = require('firebase/database');
 const axios = require('axios');
+const { response } = require('express');
 
 const url = config.firebaseConfig.databaseURL
 nameNode = url + "nameNode/"
 dataNode = url + "dataNode/"
+curr_dir_url = url + "curr_dir/.json"
 location = nameNode + "/file_location/.json"
 partition = nameNode + "/file_partition/.json"
 file_location = {}
@@ -17,27 +19,58 @@ function setUp(callback) {
     axios.patch(nameNode + ".json", data = '{"default": "null"}')
     axios.patch(dataNode + ".json", data = '{"default": "null"}')
 
-    axios.get(location)
+    axios.get(curr_dir_url).then(response => {
+        curr_dir = response.data
+
+        axios.get(location)
         .then(response => {
             data = response.data
             if (data != null && Object.keys(data).length != 0) {
                 file_location = data
                 axios.get(partition).then(response => {
                     file_partition = response.data
-                    callback(file_location, file_partition)
+                    callback(file_location, file_partition, curr_dir)
                 })
             } else {
-                callback(file_location, file_partition)
+                callback(file_location, file_partition, curr_dir)
             }
 
         })
+    })
         .catch(error => {
             console.log(error);
         });
 }
 
+function cd(dir, callback) {
+    setUp((file_location, file_partition, curr_dir) => {
+        if (dir == ".."){
+            if (curr_dir == "/"){
+                callback("No parent directory for root")
+            } else {
+                curr_dir = curr_dir.slice(0, curr_dir.lastIndexOf("/"))
+                patch_file()
+                callback("Success")
+            }
+        }
+        else {
+            new_dir = curr_dir + "/" + dir
+            axios.get(nameNode + new_dir + "/.json").then(response => {
+                if (response.data === null){
+                    callback("directory not found")
+                } else {
+                    curr_dir = new_dir
+                    patch_file()
+                    callback("Success")
+                }
+            })
+
+        } 
+    });
+}
+
 function mkdir(dir, callback) {
-    setUp((file_location, file_partition) => {
+    setUp((file_location, file_partition, curr_dir) => {
         // assume dir start with /
         res = dir.slice(1).split('/')
         n = res.length
@@ -236,6 +269,7 @@ function readPartition(file, numParts, callback) {
 function patch_file() {
     axios.put(location, file_location)
     axios.put(partition, file_partition)
+    axios.put(curr_dir_url, curr_dir)
 }
 
 function doQuery(query, callback) {
@@ -348,6 +382,7 @@ function compare(obj, con) {
 }
 
 exports.mkdir = mkdir
+exports.cd = cd
 exports.ls = ls
 exports.cat = cat
 exports.rm = rm
