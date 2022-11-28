@@ -128,12 +128,16 @@ export default function Query(props) {
       }
     )
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
-      console.log(res);
-      if(res.data.output.length === 0) {
-        setOutput(queryEmptyStr);
+      if(res.data.err !== '') {
+        alert(res.data.err);
       }
       else {
-        setOutput(res.data.output);
+        if(res.data.output.length === 0) {
+          setOutput(queryEmptyStr);
+        }
+        else {
+          setOutput(res.data.output);
+        }
       }
     });
   }
@@ -160,12 +164,16 @@ export default function Query(props) {
     );
     console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
-      console.log(res);
-      if(res.data.output.length === 0) {
-        setOutput(queryEmptyStr);
+      if(res.data.err !== '') {
+        alert(res.data.err);
       }
       else {
-        setOutput(res.data.output);
+        if(res.data.output.length === 0) {
+          setOutput(queryEmptyStr);
+        }
+        else {
+          setOutput(res.data.output);
+        }
       }
     });
   }
@@ -192,12 +200,16 @@ export default function Query(props) {
     );
     console.log(jstr)
     Axios.post('http://localhost:3001/query', {rawQuery: jstr}).then((res) => {
-      console.log(res);
-      if(res.data.output.length === 0) {
-        setOutput(queryEmptyStr);
+      if(res.data.err !== '') {
+        alert(res.data.err);
       }
       else {
-        setOutput(res.data.output);
+        if(res.data.output.length === 0) {
+          setOutput(queryEmptyStr);
+        }
+        else {
+          setOutput(res.data.output);
+        }
       }
     });
   }

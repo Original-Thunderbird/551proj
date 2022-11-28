@@ -31,12 +31,17 @@ export default function Explorer(props) {
       console.log("curDB:", props.srcDB)
       console.log("Explorer count:", count)
       Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            eList: res.data.content
-          }
-        })
+        if(res.data.err !== '') {
+          alert(res.data.err)
+        }
+        else {
+          setExplorerState(prevExplorerState => {
+            return {
+              ...prevExplorerState,
+              eList: res.data.content
+            }
+          })
+        }
       });
     }
   }, [explorerState.curDir, props.srcDB]);
@@ -97,12 +102,17 @@ export default function Explorer(props) {
 
   function cdParent() {
     Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: ['..']}).then((res) => {
-      setExplorerState(prevExplorerState => {
-        return {
-          ...prevExplorerState,
-          curDir: res.data.content
-        }
-      })
+      if(res.data.err !== '') {
+        alert(res.data.err);
+      }
+      else {
+        setExplorerState(prevExplorerState => {
+          return {
+            ...prevExplorerState,
+            curDir: res.data.content
+          }
+        });
+      }
     });
   }
 
@@ -113,13 +123,18 @@ export default function Explorer(props) {
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'cd', params: [cmdInput.cdChildDir]}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            curDir: res.data.content
-          }
-        });
-        setCmdInput({cdChildDir: '', catFile:'', rmTarget:''});
+        if(res.data.err !== '') {
+          alert(res.data.err);
+        }
+        else {
+          setExplorerState(prevExplorerState => {
+            return {
+              ...prevExplorerState,
+              curDir: res.data.content
+            }
+          });
+          setCmdInput({cdChildDir: '', catFile:'', rmTarget:''});
+        }
       });
     }
   }
@@ -131,14 +146,19 @@ export default function Explorer(props) {
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'cat', params: [cmdInput.catFile]}).then((res) => {
-        //console.log(res.data.content)
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            fileContent: res.data.content
-          }
-        });
-        setCmdInput({cdChildDir: '', catFile:'', rmTarget:''});
+        if(res.data.err !== '') {
+          alert(res.data.err);
+        }
+        else {
+          //console.log(res.data.content)
+          setExplorerState(prevExplorerState => {
+            return {
+              ...prevExplorerState,
+              fileContent: res.data.content
+            }
+          });
+          setCmdInput({cdChildDir: '', catFile:'', rmTarget:''});
+        }
       });
     }
   }
@@ -151,15 +171,22 @@ export default function Explorer(props) {
     else {
       closeMkdirPopup();
       Axios.post('http://localhost:3001/cmd', {cmd: 'mkdir', params: [event.target.name.value]}).then((res) => {
-        console.log(res.data);
+        if(res.data.err !== '') {
+          alert(res.data.err);
+        }
       }).then(() => {
         Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-          setExplorerState(prevExplorerState => {
-            return {
-              ...prevExplorerState,
-              eList: res.data.content
-            }
-          })
+          if(res.data.err !== '') {
+            alert(res.data.err);
+          }
+          else {
+            setExplorerState(prevExplorerState => {
+              return {
+                ...prevExplorerState,
+                eList: res.data.content
+              }
+            });
+          }
         });
       });
     }
@@ -186,14 +213,23 @@ export default function Explorer(props) {
 
   const handleFileRead = (event) => {
     event.preventDefault(event);
-    Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), name: fileName, numPart: numPart}).then((res) => {}).then(() => {
+    Axios.post('http://localhost:3001/put', {file: JSON.parse(fileReader.result), name: fileName, numPart: numPart}).then((res) => {
+      if(res.data.err !== '') {
+        alert(res.data.err);
+      }
+    }).then(() => {
       Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-        setExplorerState(prevExplorerState => {
-          return {
-            ...prevExplorerState,
-            eList: res.data.content
-          }
-        })
+        if(res.data.err !== '') {
+          alert(res.data.err);
+        }
+        else {
+          setExplorerState(prevExplorerState => {
+            return {
+              ...prevExplorerState,
+              eList: res.data.content
+            }
+          });
+        }
       });
     });
   };
@@ -205,15 +241,23 @@ export default function Explorer(props) {
     }
     else {
       Axios.post('http://localhost:3001/cmd', {cmd: 'rm', params: [cmdInput.rmTarget]}).then((res) => {
+        if(res.data.err !== '') {
+          alert(res.data.err);
+        }
       }).then(() => {
         Axios.post('http://localhost:3001/cmd', {cmd: 'ls', params: [explorerState.curDir]}).then((res) => {
-          setExplorerState(prevExplorerState => {
-            return {
-              ...prevExplorerState,
-              eList: res.data.content
-            }
-          });
-          setCmdInput({cdChildDir: '', catFile:'', rmTarget:''});
+          if(res.data.err !== '') {
+            alert(res.data.err);
+          }
+          else {
+            setExplorerState(prevExplorerState => {
+              return {
+                ...prevExplorerState,
+                eList: res.data.content
+              }
+            });
+            setCmdInput({cdChildDir: '', catFile:'', rmTarget:''});
+          }
         });
       });
     }

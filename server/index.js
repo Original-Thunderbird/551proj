@@ -66,7 +66,6 @@ app.post('/query', (req, res) => {
     var output = '', err = ''
     console.log(config.srcDB)
     if (config.srcDB === 'MySQL') {
-        console.log("mysql")
         sqlAna.HandleQuery(req.body.rawQuery, (params) => {
             res.send({ output: params[0], err: params[1] });
         })
