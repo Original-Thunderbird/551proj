@@ -49,6 +49,7 @@ function Route(cmd, params, filename, callback) {
             break;
         case 'doQuery':
             fsCmd.doQuery(params[0], callback)
+            break;
         default:
             err = 'do not support such command';
             break;
