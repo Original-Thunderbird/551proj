@@ -19,7 +19,11 @@ function setUp(callback) {
     axios.patch(dataNode + ".json", data = '{"default": "null"}')
 
     axios.get(curr_dir_url).then(response => {
-        curr_dir = response.data
+        if (response.data === null){
+            curr_dir = "/"
+        } else {
+            curr_dir = response.data
+        }
 
         axios.get(location)
         .then(response => {
@@ -44,7 +48,7 @@ function setUp(callback) {
 function cd(dir, callback) {
     setUp((file_location, file_partition, curr_dir) => {
         if (dir == ".."){
-            if (curr_dir == "/"){
+            if (curr_dir == "root"){
                 callback("No parent directory for root")
             } else {
                 curr_dir = curr_dir.slice(0, curr_dir.lastIndexOf("/"))
