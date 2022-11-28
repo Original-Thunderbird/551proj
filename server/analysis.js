@@ -79,9 +79,9 @@ function HandleQuery(query, callback) {
     else if(from.toUpperCase() == "COMPANY"){
         config.sqlDB.query("select GROUP_CONCAT(p.partno SEPARATOR ',') as pno from meta m join parts p on m.inumber = p.inumber where m.typ = 'fc'", (err, res)=>{
             var strs = res[0].pno.split(',')
-            var result = []
+            var result = ''
             for(let j=0 ;j<strs.length; j++){
-                let partResult = []
+                let partResult = ''
                 config.sqlDB.query("select * from t"+strs[j], function (err, res) {
                     if(err){
                         console.log(err)
@@ -95,15 +95,15 @@ function HandleQuery(query, callback) {
                         }
                         if(flag){
                             if(groupby!=undefined){
-                                partResult.push(groupByRenderC(res[i], groupby))
+                                partResult+=groupByRenderC(res[i], groupby)
                             }
                             else{
-                                partResult.push(renderC(res[i], select))
+                                partResult+=renderC(res[i], select)
                             }
 
                         }
                     }
-                    result.push(partResult)
+                    result+=partResult
                     if(j==strs.length-1){
 
                         if(groupby!=undefined){

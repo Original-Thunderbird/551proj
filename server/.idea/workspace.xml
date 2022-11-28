@@ -66,7 +66,7 @@
       <workItem from="1667244192235" duration="10854000" />
       <workItem from="1668936422701" duration="652000" />
       <workItem from="1669015712562" duration="58045000" />
-      <workItem from="1669526151830" duration="21805000" />
+      <workItem from="1669526151830" duration="26944000" />
     </task>
     <task id="LOCAL-00001" summary="Add query and analysis with MySQL. Support &quot;select from where(group by)&quot; query.">
       <created>1669205196470</created>
