@@ -124,6 +124,10 @@ function App() {
 
   return (
     <div>
+      <h1>CS Department Job Hunter Tracking System</h1>
+      <br/>
+      <h4>Group members: Haorui Chen, Zihao Zhang, Zehao Li</h4>
+      <br/><br/><br/>
       <label>Current DB:</label>
       <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
       <input type="radio" id="Firebase" value="Firebase" name="srcDB" checked={srcDB === 'Firebase'} onChange={handleDB}/>

@@ -31,7 +31,7 @@ export default function Query(props) {
     { value: 'Computer Security', label: 'Computer Security' },
     { value: 'Computer Networks', label: 'Computer Networks' },
     { value: 'Scientists and Engineers (37)', label: 'Scientists and Engineers (37)' },
-    { value: '', label: '(None)' }
+    { value: '', label: '(Any)' }
   ];
 
   const fieldOptions = [
