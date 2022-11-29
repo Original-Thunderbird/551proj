@@ -35,7 +35,7 @@ app.post('/put', (req, res) => {
     // console.log(req.body);
     // console.log(req.body.numPart);
     console.log(req.body.name);
-    var err = "Put not success", content = "Success"
+    var err = "", content = "Success"
     if (config.srcDB === 'MySQL') {
         sqlRoute.Route("put", [req.body.name, req.body.numPart], req.body.file, function (result) {
             err = ""
