@@ -140,7 +140,7 @@ function App() {
       <Explorer srcDB={srcDB} srcDBFlip={srcDBFlip}/>
       <br/><br/>
       <h2>Search {'&'} Analysis</h2>
-      <Query/>
+      <Query srcDB={srcDB}/>
       <br/><br/>
       <label>Current dir:{myOutput.curDir}</label>
       <form onSubmit={handleCmd}>
