@@ -169,8 +169,8 @@ function cat(file,callback) {
             if(err){
                 console.log(err)
             }
-            if(res.length==0){
-                return callback("No results found.")
+            if(res[0].typ=='d'){
+                return callback("Invalid type or file name")
             }
             console.log(res[0])
             if(res[0].typ=='fs'){
@@ -314,8 +314,11 @@ function rm(file, callback) {
             if(err) console.log(err)
             var reslist = []
             var typlist = []
-
+            if(ino==0){
+                return callback("0")
+            }
             dfs1(res, reslist, typlist, ino)
+
             var str = "("+reslist.join(",")+")"
             console.log(str)
             for(let i=0;i<reslist.length;i++){
@@ -335,11 +338,11 @@ function rm(file, callback) {
     return [content, err];
 }
 
-function put(file, dir, numParts, callback) {
+function put(file, dir, numParts,filename, callback) {
     var content = 'whatever', err = ''
     //console.log('put:', file, dir, numParts)
 
-    var filename = "no_folder_name_1"
+
     var type = ''
     try {
 
