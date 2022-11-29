@@ -141,7 +141,7 @@ function App() {
       <br/><br/>
       <h2>Search {'&'} Analysis</h2>
       <Query srcDB={srcDB}/>
-      <br/><br/>
+      {/* <br/><br/>
       <label>Current dir:{myOutput.curDir}</label>
       <form onSubmit={handleCmd}>
         <label>cmd:     </label>
@@ -176,7 +176,7 @@ function App() {
         <label>outPut:{myOutput.queryOutput}</label>
       </form>
       <br/>
-      <button onClick={handleSQLTest}>SQLTest</button>
+      <button onClick={handleSQLTest}>SQLTest</button> */}
 
       
 

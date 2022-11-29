@@ -170,6 +170,7 @@ export default function Explorer(props) {
     }
     else {
       closeMkdirPopup();
+      document.querySelector('html').classList.toggle('scroll-lock');
       Axios.post('http://localhost:3001/cmd', {cmd: 'mkdir', params: [event.target.name.value]}).then((res) => {
         if(res.data.err !== null && res.data.err !== '') {
           alert(res.data.err);
@@ -201,6 +202,7 @@ export default function Explorer(props) {
     }
     else {
       closePutPopup();
+      document.querySelector('html').classList.toggle('scroll-lock');
       console.log(data)
       fileName = data['file'][0]['name'];
       console.log(fileName)

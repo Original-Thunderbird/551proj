@@ -34,7 +34,15 @@ export default function Query(props) {
     { value: '', label: '(Any)' }
   ];
 
-  const fieldOptions = [
+  const foiOptions = [
+    { value: 'Name', label: 'Name'},
+    { value: 'SpecName', label: 'SpecName'},
+    { value: 'Hired', label: 'Hired'},
+    { value: 'CompanyName', label: 'CompanyName'},
+    { value: 'Role', label: 'Role'},
+  ];
+
+  const ftcOptions = [
     { value: 'Name', label: 'Name'},
     { value: 'SpecName', label: 'SpecName'},
     { value: 'Hired', label: 'Hired'},
@@ -286,10 +294,10 @@ export default function Query(props) {
             <label>Field of Interest:</label>
             <br/>
             <Select
-              defaultValue={[fieldOptions[0], fieldOptions[1], fieldOptions[2], fieldOptions[3], fieldOptions[4]]}
+              defaultValue={[foiOptions[0], foiOptions[1], foiOptions[2], foiOptions[3], foiOptions[4]]}
               isMulti
               name="foi"
-              options={fieldOptions}
+              options={foiOptions}
               className="basic-multi-select"
               classNamePrefix="select"
               onChange={handleFoIChange}
@@ -309,9 +317,9 @@ export default function Query(props) {
             <br/>
             <Select
               name='ftc'
-              defaultValue={fieldOptions[5]}
+              defaultValue={ftcOptions[5]}
               onChange={handleFtCChange}
-              options={fieldOptions}
+              options={ftcOptions}
             />
             <br/>
             <button className="btn btn-danger center">Submit</button>
