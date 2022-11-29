@@ -17,7 +17,17 @@ function HandleQuery(query, callback) {
     var from = json.from
     var where = json.where
     var groupby = json.groupby
-
+    if(groupby==null||groupby==''){
+        groupby = undefined
+    }
+    var header = ""
+    for(let tp of select){
+        header += tp+"\t\t\t"
+    }
+    header += "\n"
+    if(groupby!=undefined){
+        header = groupby+"\t\t\tCount(*)\n"
+    }
     if(from.toUpperCase() == "STUDENT"){
         config.sqlDB.query("select GROUP_CONCAT(p.partno SEPARATOR ',') as pno from meta m join parts p on m.inumber = p.inumber where m.typ = 'fs'", (err, res)=>{
             var strs = res[0].pno.split(',')
@@ -51,35 +61,46 @@ function HandleQuery(query, callback) {
 
                         if(groupby!=undefined){
                             let map = new Map()
+                            let part = []
+                            let i = 0
                             for(let p of result){
+                                let temp = ''
                                 for(let e of p){
+                                    temp += e+"\t\t\t1\n"
                                     if(map.has(e)){
+
                                         map.set(e,map.get(e)+1)
                                     }
                                     else{
                                         map.set(e, 1)
                                     }
                                 }
+                                part.push("NO."+i+" Partition:\n"+header)
+                                part.push(temp+'\n')
+                                i++
                             }
                             var ret = ""
                             for(let [key,value] of map){
-                                ret = ret + key + "\t" + value + "\n"
+                                ret = ret + key + "\t\t\t\t\t" + value + "\n"
                             }
                             console.log(ret)
-                            return callback([ret,''])
+                            return callback(["Input:"+query+"\n"+part.join('')+"\nFinal Result:\n"+header+ret,''])
                         }
                         else{
                             let strr = []
+                            let part = []
                             for(let i=0;i<result.length;i++){
                                 let temp = ''
                                 for(let j=0;j<result[i].length;j++){
                                     temp += result[i][j]
                                 }
                                 strr.push(temp)
+                                part.push("NO."+i+" Partition:\n"+header)
+                                part.push(temp+"\n")
                             }
 
                             console.log(strr)
-                            return callback([strr.join(''),''])
+                            return callback(["Input:"+query+"\n"+part.join('')+"\nFinal Result:\n"+header+strr.join(''),''])
                         }
 
                     }
@@ -91,7 +112,7 @@ function HandleQuery(query, callback) {
     else if(from.toUpperCase() == "COMPANY"){
         config.sqlDB.query("select GROUP_CONCAT(p.partno SEPARATOR ',') as pno from meta m join parts p on m.inumber = p.inumber where m.typ = 'fc'", (err, res)=>{
             var strs = res[0].pno.split(',')
-            var result = ''
+            var result = []
             for(let j=0 ;j<strs.length; j++){
                 let partResult = ''
                 config.sqlDB.query("select * from t"+strs[j], function (err, res) {
@@ -116,7 +137,7 @@ function HandleQuery(query, callback) {
                         }
                     }
                     if(partResult.length!=0)
-                        result+=partResult
+                        result.push(partResult)
                     if(j==strs.length-1){
 
                         if(groupby!=undefined){
@@ -133,14 +154,22 @@ function HandleQuery(query, callback) {
                             }
                             var ret = ""
                             for(let [key,value] of map){
-                                ret = ret + key + "\t\t" + value + "\n"
+                                ret = ret + key + "\t\t\t" + value + "\n"
                             }
                             console.log(ret)
-                            return callback([ret,''])
+                            return callback([header+ret,''])
                         }
                         else{
                             console.log(result)
-                            return callback([result,''])
+                            let strr = []
+                            let part = []
+                            for(let i=0;i<result.length;i++){
+                                let temp = result[i]
+                                strr.push(temp)
+                                part.push("NO."+i+" Partition:\n"+header)
+                                part.push(temp+"\n")
+                            }
+                            return callback(["Input:"+query+"\n"+part.join('')+"\nFinal Result:\n"+header+strr.join(''),''])
                         }
 
                     }
@@ -153,7 +182,7 @@ function HandleQuery(query, callback) {
 
         config.sqlDB.query("select GROUP_CONCAT(p.partno SEPARATOR ',') as pno from meta m join parts p on m.inumber = p.inumber where m.typ = 'fp'", (err, res)=>{
             var strs = res[0].pno.split(',')
-            var result = ''
+            var result = []
             for(let j=0 ;j<strs.length; j++){
                 let partResult = ''
                 config.sqlDB.query("select * from t"+strs[j], function (err, res) {
@@ -173,10 +202,17 @@ function HandleQuery(query, callback) {
                         }
                     }
                     if(partResult.length!=0)
-                        result+=partResult
+                        result.push(partResult)
                     if(j==strs.length-1){
-                            console.log(result)
-                            return callback([result,''])
+                        let strr = []
+                        let part = []
+                        for(let i=0;i<result.length;i++){
+                            let temp = result[i]
+                            strr.push(temp)
+                            part.push("NO."+i+" Partition:\n"+header)
+                            part.push(temp+"\n")
+                        }
+                        return callback(["Input:"+query+"\n"+part.join('')+"\nFinal Result:\n"+header+strr.join(''),''])
                     }
                 })
             }
@@ -228,22 +264,22 @@ function render(obj, select){
     for(let str of select){
         switch (str) {
             case "ID":
-                res = res + obj.ID + "\t"
+                res = res + obj.ID + "\t\t\t"
                 break;
             case "Name":
-                res = res + obj.Name + "\t"
+                res = res + obj.Name + "\t\t\t"
                 break;
             case "SpecName":
-                res = res + obj.SpecName + "\t"
+                res = res + obj.SpecName + "\t\t\t"
                 break;
             case "Hired":
-                res = res + ((obj.Hired=="1"||obj.Hired==1)?"Hired":"Not Hired") + "\t"
+                res = res + ((obj.Hired=="1"||obj.Hired==1)?"Hired":"Not Hired") + "\t\t\t"
                 break;
             case "CompName":
-                res = res + obj.CompName + "\t"
+                res = res + obj.CompName + "\t\t\t"
                 break;
             case "Role":
-                res = res + obj.Role + "\t"
+                res = res + obj.Role + "\t\t\t"
                 break;
         }
     }
@@ -256,10 +292,10 @@ function renderC(obj, select){
     for(let str of select){
         switch (str) {
             case "Company":
-                res = res + obj.Company + "\t"
+                res = res + obj.Company + "\t\t\t"
                 break;
             case "Industry":
-                res = res + obj.Industry + "\t"
+                res = res + obj.Industry + "\t\t\t"
                 break;
         }
     }
@@ -272,10 +308,10 @@ function renderP(obj, select){
     for(let str of select){
         switch (str) {
             case "Name":
-                res = res + obj.Name + "\t"
+                res = res + obj.Name + "\t\t\t"
                 break;
             case "Size":
-                res = res + obj.Size + "\t"
+                res = res + obj.Size + "\t\t\t"
                 break;
         }
     }
