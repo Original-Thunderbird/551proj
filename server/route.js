@@ -24,7 +24,7 @@ function getRealPath(path) {
 }
 
 function Route(cmd, params, filename, callback) {
-    var err, content='';
+    var err = "", content='';
     switch(cmd) {
         case 'cd':
             var str = params[0]
@@ -32,6 +32,7 @@ function Route(cmd, params, filename, callback) {
                 var temp = curDir
                 if(temp==="/"){
                     //alert("No parent level")
+                    err = 'No parent level'
                 }
                 else{
                     var t = temp.split("/")
@@ -45,17 +46,22 @@ function Route(cmd, params, filename, callback) {
             fsCmd.cd(str,function (result,ino) {
                 if(result===""||result=="error"){
                     result = "/"
+                    err = "Invalid file path"
                 }
                 curDir = result
                 curInumber = ino
                 console.log(curInumber)
-                return callback(result)
+                return callback(result,err)
             });
             break;
         case 'mkdir':
             fsCmd.mkdir(curInumber, params[0],function (result) {
                 content = result;
-                callback(result);
+                var error = ""
+                if(result=="fail"){
+                    error = "Fail to put. Duplicated file name."
+                }
+                callback(result,error);
             });
             break;
         case 'ls':
@@ -66,21 +72,24 @@ function Route(cmd, params, filename, callback) {
             break;
         case 'cat':
             fsCmd.cat(getRealPath(params[0]),function (result) {
-              callback(result)
+                if(result=="Invalid type or file name"){
+                    err = "Invalid type or file name"
+                }
+                callback(result,err)
             });
             break;
         case 'rm':
             fsCmd.rm(getRealPath(params[0]),function (result) {
                 if(result=="0"){
-                    callback("No such directory found")
+                    callback("","No such directory found")
                 }
                 else{
-                    callback("Delete successfully")
+                    callback("Delete successfully","")
                 }
             });
             break;
         case 'put':
-            fsCmd.put(filename, curDir, params[1], function (result) {
+            fsCmd.put(filename, curDir, params[1], params[0], function (result) {
                 callback(result)
             });
             break;

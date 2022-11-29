@@ -69,8 +69,17 @@ function HandleQuery(query, callback) {
                             return callback([ret,''])
                         }
                         else{
-                            console.log(result)
-                            return callback([result,''])
+                            let strr = []
+                            for(let i=0;i<result.length;i++){
+                                let temp = ''
+                                for(let j=0;j<result[i].length;j++){
+                                    temp += result[i][j]
+                                }
+                                strr.push(temp)
+                            }
+
+                            console.log(strr)
+                            return callback([strr.join(''),''])
                         }
 
                     }

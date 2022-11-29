@@ -37,7 +37,9 @@ app.post('/put', (req, res) => {
     console.log(req.body.name);
     var err = "Put not success", content = "Success"
     if (config.srcDB === 'MySQL') {
-        sqlRoute.Route("put", [0, req.body.numPart], req.body.file, function (result) { res.send({ content: result, err: err }); })
+        sqlRoute.Route("put", [req.body.name, req.body.numPart], req.body.file, function (result) {
+            err = ""
+            res.send({ content: result, err: err }); })
     }
     else {
         fbRoute.Route("put", [req.body.file, req.body.numPart], req.body.name, function (result) { console.log("send result in Firebase"); res.send({ content: result, err: err }); })
@@ -48,7 +50,10 @@ app.post('/cmd', (req, res) => {
     var cmd = req.body.cmd, params = req.body.params, filename = req.body.filename;
     var err = "";
     if (config.srcDB === 'MySQL') {
-        sqlRoute.Route(cmd, params, filename, function (result) { res.send({ content: result, err: err }); });
+        sqlRoute.Route(cmd, params, filename, function (result,error) {
+            if(error==undefined) error =  ""
+            res.send({ content: result, err: error });
+        });
     }
     else {
         fbRoute.Route(cmd, params, filename, function (result) { res.send({ content: result, err: err }); });
