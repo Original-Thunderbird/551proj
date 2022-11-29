@@ -20,27 +20,27 @@ function setUp(callback) {
     axios.patch(dataNode + ".json", data = '{"default": "null"}')
 
     axios.get(curr_dir_url).then(response => {
-        console.log('orig curr dir:', curr_dir_url)
+        // console.log('orig curr dir:', curr_dir_url)
         curr_dir = curr_dir_url.substring(url.length)
-        console.log('curr dir step 1:', curr_dir)
+        // console.log('curr dir step 1:', curr_dir)
         curr_dir = curr_dir.substring(0, curr_dir.length-5)
-        console.log("curr dir step 2:", curr_dir)
+        // console.log("curr dir step 2:", curr_dir)
         curr_dir = curr_dir === '' ? '/' : curr_dir 
-        console.log("curr dir step 3:", curr_dir)
+        // console.log("curr dir step 3:", curr_dir)
 
         axios.get(location)
         .then(response => {
             data = response.data
             if (data != null && Object.keys(data).length != 0) {
                 file_location = data
-                console.log("location:", file_location, "partition:", partition)
+                // console.log("location:", file_location, "partition:", partition)
                 axios.get(partition).then(response => {
                     file_partition = response.data
-                    console.log("callback 1");
+                    // console.log("callback 1");
                     callback(file_location, file_partition)
                 })
             } else {
-              console.log("callback 2");
+            //   console.log("callback 2");
                 callback(file_location, file_partition)
             }
 
@@ -169,6 +169,7 @@ function cat(path, callback) {
         }
 
         Promise.all(promises).then(() => {
+            // console.log(res)
             callback(res)
         })
     })
@@ -293,36 +294,51 @@ function patch_file() {
 }
 
 function doQuery(query, callback) {
+    console.log("---------------------------------------")
+    // console.log(query)
     var json = JSON.parse(query)
     var select = json.select;
-    var from = json.from
+    var from = json.from.toLowerCase()
     var where = json.where
     var groupby = json.groupby
+    console.log(where)
 
     // retrieve number of partitions
     // assume from file always exists
     filename = from + ".json"
+    // filename = "student.json"
+    console.log(nameNode + "/file_partition/" + from + "/.json")
     axios.get(nameNode + "/file_partition/" + from + "/.json").then((response) => {
+    // axios.get('https://dsci551-project-229fc-default-rtdb.firebaseio.com/nameNode//file_partition/student/.json').then((response) => {
         numPartitions = response.data
         promises = []
-        partResult = []
+        partResult = {}
+        partResult["input"] = query
+        console.log("****************************************")
         for (let i = 1; i < numPartitions + 1; i++) {
             promises.push(new Promise((resolve, reject) => {
                 readPartition(filename, i, (data) => {
                     partResultGroupBy = {}
+                    partResultSelect = []
                     for (const d of data) {
                         // filter the where clause
                         var flag = true
-                        if (where != undefined) {
+                        if (where != null) {
+                            // console.log(d)
                             for (let con of where) {
+                                // console.log("##################################")
+                                // console.log(d)
+                                // console.log("##################################")
+                                // console.log(con)
                                 if (!compare(d, con)) {
                                     flag = false
                                 }
                             }
+                            // console.log(flag)
                         }
                         if (flag) {
                             // handle group by
-                            if (groupby != undefined) {
+                            if (groupby != null) {
                                 group = d[groupby]
                                 if (group in partResultGroupBy) {
                                     partResultGroupBy[group] = partResultGroupBy[group] + 1
@@ -332,12 +348,15 @@ function doQuery(query, callback) {
                             }
                             // handle select
                             else {
-                                partResult.push(render(d, select))
+                                partResultSelect.push(render(d, select))
                             }
                         }
                     }
-                    if (groupby != undefined) {
-                        partResult.push(partResultGroupBy)
+                    
+                    if (groupby != null) {
+                        partResult["Partition" + i] = partResultGroupBy
+                    }else{
+                        partResult["Partition" + i] = partResultSelect
                     }
                     resolve("Success");
                 })
@@ -347,10 +366,10 @@ function doQuery(query, callback) {
         Promise.all(promises).then((unused) => {
             // Reduce
             res = ""
-            if (groupby != undefined) {
+            if (groupby != null) {
                 allResult = {}
-                for (pr of partResult) {
-                    for (group in pr) {
+                for (pr in partResult) {
+                    for (group in partResult[pr]) {
                         if (group in allResult) {
                             allResult[group] = allResult[group] + pr[group]
                         } else {
@@ -358,15 +377,15 @@ function doQuery(query, callback) {
                         }
                     }
                 }
-                for (group in allResult) {
-                    res = res + group + ":" + allResult[group] + "\n"
-                }
-                callback([res, null])
+                partResult["All"] = allResult
+                callback([partResult, null])
             } else {
-                for (const r of partResult) {
-                    res = res + r + "\n"
+                allResult = []
+                for (pr in partResult) {
+                    allResult.push.apply(allResult, partResult[pr])
                 }
-                callback([res, null])
+                partResult["All"] = allResult
+                callback([partResult, null])
             }
         })
     })
@@ -375,7 +394,7 @@ function doQuery(query, callback) {
 function render(obj, select) {
     var res = ""
     for (let str of select) {
-        res = res + obj[str] + "\t"
+        res = res + obj[str] + "  "
     }
     return res
 }
@@ -384,6 +403,38 @@ function compare(obj, con) {
     v1 = obj[con.attr]
     condition = con.method
     v2 = con.value
+    switch(con.attr){
+        case "Name":
+            if (v2 == ""){
+                return true
+            }
+        case "SpecName":
+            if (v2 == null){
+                return true
+            }
+        case "Hired":
+            if (!("value" in con)){
+                return true
+            }
+        case "CompName":
+            if (v2 == ""){
+                return true
+            }
+        case "Role":
+            if (v2 == ""){
+                return true
+            }
+        case "Company":
+            if (v2 == ""){
+                return true
+            }
+        case "Industry":
+            if (v2 == ""){
+                return true
+            }
+        
+        
+    } 
     if (condition == '=') {
         return v1 == v2
     }
