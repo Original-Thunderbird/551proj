@@ -46,7 +46,7 @@ function Route(cmd, params, filename, callback) {
             fsCmd.cd(str,function (result,ino) {
                 if(result===""||result=="error"){
                     result = "/"
-                    err = "Invalid file path"
+                    err = ""
                 }
                 curDir = result
                 curInumber = ino
